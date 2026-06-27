@@ -20,6 +20,7 @@ export default [
         localStorage: 'readonly',
         sessionStorage: 'readonly',
         fetch: 'readonly',
+        alert: 'readonly',
         confirm: 'readonly',
         setTimeout: 'readonly',
         setInterval: 'readonly',
