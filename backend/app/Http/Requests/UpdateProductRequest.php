@@ -13,7 +13,7 @@ class UpdateProductRequest extends FormRequest
 
     public function rules(): array
     {
-        $productId = $this->route('product');
+        $productId = $this->route('id');
 
         return [
             'name' => "required|string|max:255|unique:products,name,{$productId}",
