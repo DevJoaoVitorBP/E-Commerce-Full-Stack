@@ -2,6 +2,8 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { updateCategorySchema } from '@/schemas/category.schema';
+import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
 
 interface Props {
@@ -19,9 +21,7 @@ const emit = defineEmits<Emits>();
 
 const productsStore = useProductsStore();
 const isLoading = ref(false);
-const errors = reactive({
-  name: '',
-});
+const errors = reactive<Record<string, string>>({});
 
 const formData = reactive({
   name: '',
@@ -39,14 +39,20 @@ watch(
 );
 
 const clearErrors = () => {
-  errors.name = '';
+  Object.keys(errors).forEach((key) => {
+    delete errors[key];
+  });
 };
 
 const validateForm = (): boolean => {
   clearErrors();
 
-  if (!formData.name.trim()) {
-    errors.name = 'Nome é obrigatório';
+  const result = updateCategorySchema.safeParse({
+    name: formData.name,
+  });
+
+  if (!result.success) {
+    Object.assign(errors, getZodErrors(result.error));
     return false;
   }
 
