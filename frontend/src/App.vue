@@ -18,8 +18,8 @@ import Footer from '@/components/common/Footer.vue';
 
 const authStore = useAuthStore();
 
-onMounted(() => {
-  authStore.initializeAuth();
+onMounted(async () => {
+  await authStore.initializeAuth();
 });
 </script>
 
