@@ -7,8 +7,16 @@
         <p class="text-gray-600">Bem-vindo de volta, Admin!</p>
       </div>
 
+      <!-- Loading State -->
+      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div v-for="i in 4" :key="i" class="bg-white rounded-lg shadow p-6 animate-pulse">
+          <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
+          <div class="h-8 bg-gray-300 rounded w-1/2"></div>
+        </div>
+      </div>
+
       <!-- Stats Cards -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+      <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <!-- Total Products -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
@@ -154,6 +162,9 @@ import { useOrdersStore } from '@/stores/ordersStore';
 const productsStore = useProductsStore();
 const ordersStore = useOrdersStore();
 
+const isLoading = ref(true);
+const isLoadingDetails = ref(false);
+
 const stats = ref({
   totalProducts: 0,
   totalCategories: 0,
@@ -166,12 +177,27 @@ const formatPrice = (price: number) => {
 };
 
 onMounted(async () => {
-  await productsStore.fetchProducts();
-  await ordersStore.fetchOrders();
+  try {
+    await Promise.all([
+      productsStore.fetchProducts(),
+      productsStore.fetchCategories(),
+      ordersStore.fetchOrders(),
+    ]);
 
-  stats.value.totalProducts = productsStore.products.length;
-  stats.value.totalCategories = productsStore.categories.length;
-  stats.value.totalOrders = ordersStore.orders.length;
-  stats.value.totalRevenue = ordersStore.orders.reduce((sum, order) => sum + order.total, 0);
+    stats.value.totalProducts = productsStore.pagination.total;
+    stats.value.totalCategories = productsStore.categories.length;
+    stats.value.totalOrders = ordersStore.orders.length;
+    stats.value.totalRevenue = ordersStore.orders.reduce((sum, order) => sum + order.total, 0);
+
+    isLoading.value = false;
+
+    isLoadingDetails.value = true;
+
+  } catch (error) {
+    console.error('Erro ao carregar dados do dashboard:', error);
+    isLoading.value = false;
+  } finally {
+    isLoadingDetails.value = false;
+  }
 });
 </script>

@@ -22,6 +22,13 @@ function cleanFilters(filters: ProductFilters): ProductFilters {
   ) as ProductFilters;
 }
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em ms
+
+interface CacheEntry {
+  timestamp: number;
+  data: any;
+}
+
 export const useProductsStore = defineStore('products', () => {
   const products = ref<Product[]>([]);
   const categories = ref<Category[]>([]);
@@ -35,10 +42,27 @@ export const useProductsStore = defineStore('products', () => {
     last_page: 1,
   });
 
+  const productsCache = ref<Map<string, CacheEntry>>(new Map());
+  const categoriesCache = ref<CacheEntry | null>(null);
+
   const hasNextPage = computed(() => pagination.value.current_page < pagination.value.last_page);
   const hasPrevPage = computed(() => pagination.value.current_page > 1);
 
+  function isCacheValid(cacheEntry: CacheEntry | null | undefined): boolean {
+    if (!cacheEntry) return false;
+    return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
+  }
+
   async function fetchProducts(filters: ProductFilters = {}) {
+    const cacheKey = JSON.stringify(cleanFilters(filters));
+    const cached = productsCache.value.get(cacheKey);
+
+    if (isCacheValid(cached)) {
+      products.value = cached!.data.products;
+      pagination.value = cached!.data.pagination;
+      return;
+    }
+
     isLoading.value = true;
     error.value = null;
     try {
@@ -52,6 +76,11 @@ export const useProductsStore = defineStore('products', () => {
         total: data.meta.total,
         last_page: data.meta.last_page,
       };
+
+      productsCache.value.set(cacheKey, {
+        timestamp: Date.now(),
+        data: { products: data.data, pagination: pagination.value },
+      });
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao carregar produtos');
     } finally {
@@ -75,10 +104,20 @@ export const useProductsStore = defineStore('products', () => {
   }
 
   async function fetchCategories() {
+    if (isCacheValid(categoriesCache.value)) {
+      categories.value = categoriesCache.value!.data;
+      return;
+    }
+
     error.value = null;
     try {
       const response = await api.get('/categories');
       categories.value = response.data.data;
+
+      categoriesCache.value = {
+        timestamp: Date.now(),
+        data: response.data.data,
+      };
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao carregar categorias');
     }
@@ -111,7 +150,6 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  // CRUD Products
   async function createProduct(productData: Partial<Product>) {
     isLoading.value = true;
     error.value = null;
@@ -165,7 +203,6 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  // CRUD Categories
   async function createCategory(name: string) {
     error.value = null;
     try {
@@ -206,6 +243,7 @@ export const useProductsStore = defineStore('products', () => {
 
   function reset() {
     products.value = [];
+    categories.value = [];
     currentProduct.value = null;
     error.value = null;
     pagination.value = {
@@ -214,6 +252,11 @@ export const useProductsStore = defineStore('products', () => {
       total: 0,
       last_page: 1,
     };
+  }
+
+  function clearCache() {
+    productsCache.value.clear();
+    categoriesCache.value = null;
   }
 
   return {
@@ -236,5 +279,6 @@ export const useProductsStore = defineStore('products', () => {
     updateCategory,
     deleteCategory,
     reset,
+    clearCache
   };
 });

@@ -91,7 +91,6 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   function clearCart() {
-    // ← now sync, no API call
     cart.value = null;
     items.value = [];
   }

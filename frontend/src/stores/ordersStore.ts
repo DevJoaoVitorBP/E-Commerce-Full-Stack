@@ -20,6 +20,13 @@ export interface CreateOrderData {
   notes?: string;
 }
 
+const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em ms
+
+interface CacheEntry {
+  timestamp: number;
+  data: any;
+}
+
 export const useOrdersStore = defineStore('orders', () => {
   const orders = ref<Order[]>([]);
   const currentOrder = ref<Order | null>(null);
@@ -32,7 +39,23 @@ export const useOrdersStore = defineStore('orders', () => {
     last_page: 1,
   });
 
+  const ordersCache = ref<Map<string, CacheEntry>>(new Map());
+
+   function isCacheValid(cacheEntry: CacheEntry | null | undefined): boolean {
+     if (!cacheEntry) return false;
+     return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
+   }
+
   async function fetchOrders(page: number = 1, per_page: number = 10) {
+    const cacheKey = JSON.stringify({ page, per_page });
+    const cached = ordersCache.value.get(cacheKey);
+    console.log('Fetching orders with cache key:', cacheKey, 'Cached entry:', cached);
+    if (isCacheValid(cached)) {
+      orders.value = cached!.data.orders;
+      pagination.value = cached!.data.pagination;
+      return;
+    }
+
     isLoading.value = true;
     error.value = null;
     try {
@@ -40,6 +63,12 @@ export const useOrdersStore = defineStore('orders', () => {
       const data = response.data as PaginatedResponse<Order>;
       orders.value = data.data;
       pagination.value = data.meta;
+
+      // Salvar em cache
+      ordersCache.value.set(cacheKey, {
+        timestamp: Date.now(),
+        data: { orders: data.data, pagination: data.meta },
+      });
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao carregar pedidos');
     } finally {
@@ -111,6 +140,10 @@ export const useOrdersStore = defineStore('orders', () => {
     };
   }
 
+  function clearCache() {
+    ordersCache.value.clear();
+  }
+
   return {
     orders,
     currentOrder,
@@ -122,5 +155,6 @@ export const useOrdersStore = defineStore('orders', () => {
     createOrder,
     updateOrderStatus,
     reset,
+    clearCache,
   };
 });

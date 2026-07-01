@@ -82,17 +82,15 @@ const router = createRouter({
   routes,
 });
 
-// Guard para proteger rotas
-router.beforeEach((to, _from, next) => {
+router.beforeEach((to, _from) => {
   const authStore = useAuthStore();
 
   if (to.meta.requiresAuth && !authStore.isAuthenticated) {
-    next({ name: 'Login', query: { redirect: to.fullPath } });
+    return { name: 'Login', query: { redirect: to.fullPath } };
   } else if (to.meta.requiresAdmin && !authStore.isAdmin) {
-    next({ name: 'Home' });
-  } else {
-    next();
+    return { name: 'Home' };
   }
+  return true;
 });
 
 export default router;
