@@ -5,9 +5,7 @@
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-4xl font-bold text-gray-900">Gerenciar Produtos</h1>
-          <p class="text-gray-600 mt-1">
-            Total: {{ productsStore.pagination.total }} produtos
-          </p>
+          <p class="text-gray-600 mt-1">Total: {{ productsStore.pagination.total }} produtos</p>
         </div>
         <div class="flex gap-3">
           <button
@@ -24,7 +22,7 @@
           </router-link>
         </div>
       </div>
- 
+
       <!-- Search & Filter -->
       <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex gap-4">
@@ -43,19 +41,21 @@
           </button>
         </div>
       </div>
- 
+
       <!-- Loading State -->
       <div v-if="productsStore.isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
- 
+
       <!-- Products Table -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
               <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Produto</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Categoria</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                Categoria
+              </th>
               <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Preço</th>
               <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Estoque</th>
               <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
@@ -91,7 +91,9 @@
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span
-                  :class="product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'"
+                  :class="
+                    product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  "
                   class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
                 >
                   {{ product.active ? 'Ativo' : 'Inativo' }}
@@ -114,7 +116,7 @@
                 </div>
               </td>
             </tr>
- 
+
             <!-- Empty state -->
             <tr v-if="productsStore.products.length === 0">
               <td colspan="6" class="px-6 py-12 text-center text-gray-500">
@@ -123,9 +125,11 @@
             </tr>
           </tbody>
         </table>
- 
+
         <!-- Pagination -->
-        <div class="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50">
+        <div
+          class="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50"
+        >
           <div class="text-sm text-gray-600">
             Exibindo
             <span class="font-semibold">{{ rangeStart }}</span>
@@ -135,7 +139,7 @@
             <span class="font-semibold">{{ productsStore.pagination.total }}</span>
             produtos
           </div>
- 
+
           <div class="flex items-center gap-2">
             <!-- Primeira página -->
             <button
@@ -146,7 +150,7 @@
             >
               «
             </button>
- 
+
             <!-- Página anterior -->
             <button
               @click="goToPage(currentPage - 1)"
@@ -155,7 +159,7 @@
             >
               ← Anterior
             </button>
- 
+
             <!-- Números de página -->
             <div class="flex gap-1">
               <button
@@ -172,7 +176,7 @@
                 {{ page }}
               </button>
             </div>
- 
+
             <!-- Próxima página -->
             <button
               @click="goToPage(currentPage + 1)"
@@ -181,7 +185,7 @@
             >
               Próxima →
             </button>
- 
+
             <!-- Última página -->
             <button
               @click="goToPage(productsStore.pagination.last_page)"
@@ -192,7 +196,7 @@
               »
             </button>
           </div>
- 
+
           <!-- Itens por página -->
           <div class="flex items-center gap-2 text-sm text-gray-600">
             <span>Itens por página:</span>
@@ -210,7 +214,7 @@
         </div>
       </div>
     </div>
- 
+
     <!-- Modals -->
     <EditProductModal
       :is-open="isEditOpen"
@@ -218,61 +222,57 @@
       @close="closeEditModal"
       @success="loadProducts"
     />
-    <AddProductModal
-      :is-open="isAddOpen"
-      @close="closeAddModal"
-      @success="loadProducts"
-    />
+    <AddProductModal :is-open="isAddOpen" @close="closeAddModal" @success="loadProducts" />
   </div>
 </template>
- 
+
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useProductsStore } from '@/stores/productsStore';
 import EditProductModal from '@/components/modals/EditProductModal.vue';
 import AddProductModal from '@/components/modals/AddProductModal.vue';
 import type { Product } from '@/types';
- 
+
 const productsStore = useProductsStore();
- 
+
 const searchQuery = ref('');
 const isEditOpen = ref(false);
 const isAddOpen = ref(false);
 const selectedProduct = ref<Product | null>(null);
 const currentPage = ref(1);
 const perPage = ref(15);
- 
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
- 
+
 const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
- 
+
 // ─── Paginação ───────────────────────────────────────────────────────────────
- 
+
 const rangeStart = computed(() => {
   const { current_page, per_page, total } = productsStore.pagination;
   if (total === 0) return 0;
   return (current_page - 1) * per_page + 1;
 });
- 
+
 const rangeEnd = computed(() => {
   const { current_page, per_page, total } = productsStore.pagination;
   return Math.min(current_page * per_page, total);
 });
- 
+
 /** Exibe no máximo 5 páginas centradas na página atual */
 const visiblePages = computed(() => {
   const total = productsStore.pagination.last_page;
   const current = currentPage.value;
   const delta = 2;
- 
+
   const start = Math.max(1, current - delta);
   const end = Math.min(total, current + delta);
- 
+
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
- 
+
 // ─── Ações ───────────────────────────────────────────────────────────────────
- 
+
 const loadProducts = async () => {
   await productsStore.fetchProducts({
     page: currentPage.value,
@@ -280,36 +280,36 @@ const loadProducts = async () => {
     search: searchQuery.value || undefined,
   });
 };
- 
+
 const goToPage = async (page: number) => {
   if (page < 1 || page > productsStore.pagination.last_page) return;
   currentPage.value = page;
   await loadProducts();
 };
- 
+
 const handleSearch = async () => {
   currentPage.value = 1; // volta pra primeira página ao buscar
   await loadProducts();
 };
- 
+
 const handlePerPageChange = async () => {
   currentPage.value = 1;
   await loadProducts();
 };
- 
+
 const openEditModal = (product: Product) => {
   selectedProduct.value = product;
   isEditOpen.value = true;
 };
- 
+
 const closeEditModal = () => {
   isEditOpen.value = false;
   selectedProduct.value = null;
 };
- 
+
 const openAddModal = () => (isAddOpen.value = true);
 const closeAddModal = () => (isAddOpen.value = false);
- 
+
 const deleteProduct = async (productId: number) => {
   if (!confirm('Tem certeza que deseja deletar este produto?')) return;
   try {
@@ -324,8 +324,8 @@ const deleteProduct = async (productId: number) => {
     alert(`Erro ao deletar: ${productsStore.error}`);
   }
 };
- 
+
 // ─── Init ────────────────────────────────────────────────────────────────────
- 
+
 onMounted(() => loadProducts());
 </script>

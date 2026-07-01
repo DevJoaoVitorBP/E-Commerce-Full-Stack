@@ -4,12 +4,8 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h1 class="text-4xl font-bold text-gray-900">
-            Gerenciar Categorias
-          </h1>
-          <p class="text-gray-600 mt-1">
-            Total: {{ productsStore.categories.length }} categorias
-          </p>
+          <h1 class="text-4xl font-bold text-gray-900">Gerenciar Categorias</h1>
+          <p class="text-gray-600 mt-1">Total: {{ productsStore.categories.length }} categorias</p>
         </div>
 
         <router-link
@@ -22,9 +18,7 @@
 
       <!-- Add Category Form -->
       <div class="bg-white rounded-lg shadow p-6 mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-4">
-          Nova Categoria
-        </h2>
+        <h2 class="text-2xl font-bold text-gray-900 mb-4">Nova Categoria</h2>
 
         <div class="flex gap-4">
           <input
@@ -48,18 +42,12 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
-                ID
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
-                Nome
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">ID</th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Nome</th>
               <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
                 Produtos
               </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
-                Ações
-              </th>
+              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
             </tr>
           </thead>
 
@@ -138,14 +126,12 @@ Como o teste técnico não especificou um endpoint para contar produtos por cate
 const loadCategories = async () => {
   await Promise.all([
     productsStore.fetchCategories(),
-    productsStore.fetchProducts({ per_page: 1000 })
+    productsStore.fetchProducts({ per_page: 1000 }),
   ]);
 };
 
 const getProductCount = (categoryId: number) => {
-  return productsStore.products.filter(
-    (product) => product.category_id === categoryId
-  ).length;
+  return productsStore.products.filter((product) => product.category_id === categoryId).length;
 };
 
 const addCategory = async () => {

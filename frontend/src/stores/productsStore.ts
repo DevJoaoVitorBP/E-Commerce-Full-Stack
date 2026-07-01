@@ -279,6 +279,6 @@ export const useProductsStore = defineStore('products', () => {
     updateCategory,
     deleteCategory,
     reset,
-    clearCache
+    clearCache,
   };
 });

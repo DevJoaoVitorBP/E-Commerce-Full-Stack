@@ -192,7 +192,6 @@ onMounted(async () => {
     isLoading.value = false;
 
     isLoadingDetails.value = true;
-
   } catch (error) {
     console.error('Erro ao carregar dados do dashboard:', error);
     isLoading.value = false;

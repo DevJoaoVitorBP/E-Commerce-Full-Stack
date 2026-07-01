@@ -23,7 +23,7 @@ const errors = reactive({
   name: '',
   price: '',
   quantity: '',
-  description: ''
+  description: '',
 });
 
 const formData = reactive({
@@ -31,7 +31,7 @@ const formData = reactive({
   price: 0,
   quantity: 0,
   description: '',
-  active: true
+  active: true,
 });
 
 watch(

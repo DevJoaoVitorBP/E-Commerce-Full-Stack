@@ -41,10 +41,10 @@ export const useOrdersStore = defineStore('orders', () => {
 
   const ordersCache = ref<Map<string, CacheEntry>>(new Map());
 
-   function isCacheValid(cacheEntry: CacheEntry | null | undefined): boolean {
-     if (!cacheEntry) return false;
-     return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
-   }
+  function isCacheValid(cacheEntry: CacheEntry | null | undefined): boolean {
+    if (!cacheEntry) return false;
+    return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
+  }
 
   async function fetchOrders(page: number = 1, per_page: number = 10) {
     const cacheKey = JSON.stringify({ page, per_page });

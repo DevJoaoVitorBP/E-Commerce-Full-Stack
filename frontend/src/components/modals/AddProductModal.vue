@@ -15,11 +15,14 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-watch(() => props.isOpen, async (isOpen) => {
-  if (isOpen) {
-    await productsStore.fetchCategories();
+watch(
+  () => props.isOpen,
+  async (isOpen) => {
+    if (isOpen) {
+      await productsStore.fetchCategories();
+    }
   }
-});
+);
 
 const productsStore = useProductsStore();
 const isLoading = ref(false);
