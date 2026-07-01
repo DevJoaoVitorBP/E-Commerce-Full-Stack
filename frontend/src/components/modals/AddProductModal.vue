@@ -2,6 +2,8 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { createProductSchema } from '@/schemas/product.schema';
+import { getZodErrors } from '@/utils/validation';
 
 interface Props {
   isOpen: boolean;
@@ -26,14 +28,7 @@ watch(
 
 const productsStore = useProductsStore();
 const isLoading = ref(false);
-const errors = reactive({
-  name: '',
-  description: '',
-  price: '',
-  cost_price: '',
-  quantity: '',
-  category_id: '',
-});
+const errors = reactive<Record<string, string>>({});
 
 const formData = reactive({
   name: '',
@@ -46,44 +41,30 @@ const formData = reactive({
 });
 
 const clearErrors = () => {
-  errors.name = '';
-  errors.description = '';
-  errors.price = '';
-  errors.cost_price = '';
-  errors.quantity = '';
-  errors.category_id = '';
+  Object.keys(errors).forEach((key) => {
+    delete errors[key];
+  });
 };
 
 const validateForm = (): boolean => {
   clearErrors();
-  let isValid = true;
 
-  if (!formData.name.trim()) {
-    errors.name = 'Nome é obrigatório';
-    isValid = false;
+  const result = createProductSchema.safeParse({
+    name: formData.name,
+    description: formData.description,
+    price: formData.price,
+    cost_price: formData.cost_price,
+    quantity: formData.quantity,
+    category_id: formData.category_id,
+    active: formData.active,
+  });
+
+  if (!result.success) {
+    Object.assign(errors, getZodErrors(result.error));
+    return false;
   }
 
-  if (formData.price < 0) {
-    errors.price = 'Preço não pode ser negativo';
-    isValid = false;
-  }
-
-  if (formData.cost_price < 0) {
-    errors.cost_price = 'Custo não pode ser negativo';
-    isValid = false;
-  }
-
-  if (formData.quantity < 0) {
-    errors.quantity = 'Quantidade não pode ser negativa';
-    isValid = false;
-  }
-
-  if (formData.category_id === 0) {
-    errors.category_id = 'Selecione uma categoria';
-    isValid = false;
-  }
-
-  return isValid;
+  return true;
 };
 
 const handleCreate = async () => {

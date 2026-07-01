@@ -20,20 +20,23 @@
       <div class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Nova Categoria</h2>
 
-        <div class="flex gap-4">
-          <input
-            v-model="newCategory"
-            type="text"
-            placeholder="Nome da categoria..."
-            class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-          />
+        <div class="space-y-3">
+          <div class="flex gap-4">
+            <input
+              v-model="newCategory"
+              type="text"
+              placeholder="Nome da categoria..."
+              class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            />
 
-          <button
-            @click="addCategory"
-            class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
-          >
-            ➕ Adicionar
-          </button>
+            <button
+              @click="addCategory"
+              class="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition"
+            >
+              ➕ Adicionar
+            </button>
+          </div>
+          <p v-if="errors.name" class="text-sm text-red-600">{{ errors.name }}</p>
         </div>
       </div>
 
@@ -107,9 +110,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 import { useProductsStore } from '@/stores/productsStore';
 import EditCategoryModal from '@/components/modals/EditCategoryModal.vue';
+import { createCategorySchema } from '@/schemas/category.schema';
+import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
 
 const productsStore = useProductsStore();
@@ -117,6 +122,7 @@ const productsStore = useProductsStore();
 const newCategory = ref('');
 const isEditOpen = ref(false);
 const selectedCategory = ref<Category | null>(null);
+const errors = reactive<Record<string, string>>({});
 
 /*
 Para respeitar o teste técnico, estou carregando todas as categorias e produtos de uma vez só.
@@ -134,13 +140,33 @@ const getProductCount = (categoryId: number) => {
   return productsStore.products.filter((product) => product.category_id === categoryId).length;
 };
 
+const clearErrors = () => {
+  Object.keys(errors).forEach((key) => {
+    delete errors[key];
+  });
+};
+
+const validateForm = (): boolean => {
+  clearErrors();
+
+  const result = createCategorySchema.safeParse({ name: newCategory.value });
+
+  if (!result.success) {
+    Object.assign(errors, getZodErrors(result.error));
+    return false;
+  }
+
+  return true;
+};
+
 const addCategory = async () => {
-  if (!newCategory.value.trim()) return;
+  if (!validateForm()) return;
 
   try {
     await productsStore.createCategory(newCategory.value);
     alert('Categoria criada com sucesso!');
     newCategory.value = '';
+    clearErrors();
     await loadCategories();
   } catch {
     alert(`Erro ao criar: ${productsStore.error}`);

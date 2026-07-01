@@ -2,6 +2,8 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { updateProductSchema } from '@/schemas/product.schema';
+import { getZodErrors } from '@/utils/validation';
 import type { Product } from '@/types';
 
 interface Props {
@@ -19,12 +21,7 @@ const emit = defineEmits<Emits>();
 
 const productsStore = useProductsStore();
 const isLoading = ref(false);
-const errors = reactive({
-  name: '',
-  price: '',
-  quantity: '',
-  description: '',
-});
+const errors = reactive<Record<string, string>>({});
 
 const formData = reactive({
   name: '',
@@ -50,32 +47,27 @@ watch(
 );
 
 const clearErrors = () => {
-  errors.name = '';
-  errors.price = '';
-  errors.quantity = '';
-  errors.description = '';
+  Object.keys(errors).forEach((key) => {
+    delete errors[key];
+  });
 };
 
 const validateForm = (): boolean => {
   clearErrors();
-  let isValid = true;
 
-  if (!formData.name.trim()) {
-    errors.name = 'Nome é obrigatório';
-    isValid = false;
+  const result = updateProductSchema.safeParse({
+    name: formData.name,
+    price: formData.price,
+    quantity: formData.quantity,
+    active: formData.active,
+  });
+
+  if (!result.success) {
+    Object.assign(errors, getZodErrors(result.error));
+    return false;
   }
 
-  if (formData.price < 0) {
-    errors.price = 'Preço não pode ser negativo';
-    isValid = false;
-  }
-
-  if (formData.quantity < 0) {
-    errors.quantity = 'Quantidade não pode ser negativa';
-    isValid = false;
-  }
-
-  return isValid;
+  return true;
 };
 
 const handleSave = async () => {
