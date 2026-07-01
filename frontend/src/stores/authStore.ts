@@ -16,6 +16,7 @@ export const useAuthStore = defineStore('auth', () => {
   const token = ref<string | null>(localStorage.getItem('token'));
   const isLoading = ref(false);
   const error = ref<string | null>(null);
+  const isInitializing = ref(true);
 
   const isAuthenticated = computed(() => !!token.value);
   const isAdmin = computed(() => user.value?.is_admin ?? false);
@@ -83,9 +84,16 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
-  function initializeAuth() {
-    if (token.value) {
-      api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
+  async function initializeAuth() {
+    try {
+      if (token.value) {
+        api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
+        await fetchUser();
+      }
+    } catch {
+      logout();
+    } finally {
+      isInitializing.value = false;
     }
   }
 
@@ -96,6 +104,7 @@ export const useAuthStore = defineStore('auth', () => {
     error,
     isAuthenticated,
     isAdmin,
+    isInitializing,
     register,
     login,
     logout,
