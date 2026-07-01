@@ -25,7 +25,7 @@ class UpdateProductRequest extends FormRequest
             'category_id' => 'required|exists:categories,id',
             'active' => 'nullable|boolean',
             'tags' => 'nullable|array',
-            'tags.*' => 'exists:tags,id'
+            'tags.*' => 'exists:tags,id',
         ];
     }
 }
