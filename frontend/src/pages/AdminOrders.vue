@@ -53,7 +53,6 @@
                   Pedido
                 </th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Data</th>
-                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Items</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total</th>
                 <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
                   Status
@@ -73,9 +72,6 @@
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <p class="text-gray-600">{{ formatDate(order.created_at) }}</p>
-                </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <p class="text-gray-600">{{ order.items?.length || 0 }} items</p>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <p class="font-semibold text-blue-600">R$ {{ formatPrice(order.total) }}</p>

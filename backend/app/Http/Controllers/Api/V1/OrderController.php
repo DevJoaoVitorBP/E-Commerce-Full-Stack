@@ -23,7 +23,12 @@ class OrderController extends Controller
     public function index(): JsonResponse
     {
         $userId = auth()->id();
-        $orders = $this->service->getUserOrders($userId);
+        // Se o usuário for admin, ele pode ver todos os pedidos, caso contrário, apenas os seus próprios pedidos
+        if (auth()->user()->isAdmin()) {
+            $orders = $this->service->getAllOrders();
+        } else {
+            $orders = $this->service->getUserOrders($userId);
+        }
 
         return $this->paginatedResponse(OrderResource::collection($orders), 'Pedidos listados com sucesso');
     }
