@@ -78,6 +78,17 @@
         </div>
       </div>
 
+      <!-- Alertas de Estoque Baixo -->
+      <LowStockAlert
+        :products="lowStockProducts"
+        :is-loading="lowStockLoading"
+        :pagination="lowStockPagination"
+        :count-critical="countCritical"
+        :count-low="countLow"
+        @previous-page="handlePreviousPage"
+        @next-page="handleNextPage"
+      />
+
       <!-- Seções de Gerenciamento -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Links Rápidos -->
@@ -155,15 +166,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useProductsStore } from '@/stores/productsStore';
 import { useOrdersStore } from '@/stores/ordersStore';
+import { useLowStockProducts } from '@/composables/useLowStockProducts';
+import LowStockAlert from '@/components/common/LowStockAlert.vue';
 
 const productsStore = useProductsStore();
 const ordersStore = useOrdersStore();
+const {
+  products: lowStockProductsData,
+  isLoading: lowStockLoading,
+  fetchLowStockProducts,
+  pagination: lowStockPagination,
+  isStockCritical,
+  isStockLow,
+} = useLowStockProducts();
 
 const isLoading = ref(true);
 const isLoadingDetails = ref(false);
+const currentLowStockPage = ref(1);
 
 const stats = ref({
   totalProducts: 0,
@@ -172,8 +194,32 @@ const stats = ref({
   totalRevenue: 0,
 });
 
+const lowStockProducts = computed(() => lowStockProductsData.value);
+
+const countCritical = computed(() => {
+  return lowStockProductsData.value.filter(isStockCritical).length;
+});
+
+const countLow = computed(() => {
+  return lowStockProductsData.value.filter(isStockLow).length;
+});
+
 const formatPrice = (price: number) => {
   return price.toFixed(2).replace('.', ',');
+};
+
+const handlePreviousPage = () => {
+  if (currentLowStockPage.value > 1) {
+    currentLowStockPage.value--;
+    fetchLowStockProducts(currentLowStockPage.value, 10);
+  }
+};
+
+const handleNextPage = () => {
+  if (currentLowStockPage.value < lowStockPagination.value.last_page) {
+    currentLowStockPage.value++;
+    fetchLowStockProducts(currentLowStockPage.value, 10);
+  }
 };
 
 onMounted(async () => {
@@ -182,6 +228,7 @@ onMounted(async () => {
       productsStore.fetchProducts(),
       productsStore.fetchCategories(),
       ordersStore.fetchOrders(),
+      fetchLowStockProducts(1, 10),
     ]);
 
     stats.value.totalProducts = productsStore.pagination.total;

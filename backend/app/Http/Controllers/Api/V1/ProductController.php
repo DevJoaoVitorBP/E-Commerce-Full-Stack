@@ -45,6 +45,18 @@ class ProductController extends Controller
         return $this->successResponse(new ProductResource($product), 'Produto obtido com sucesso');
     }
 
+    public function lowStock(): JsonResponse
+    {
+        $filters = request()->only('per_page', 'page');
+        $filters['per_page'] = $filters['per_page'] ?? 10;
+        $products = $this->service->getLowStockProducts($filters);
+
+        return $this->paginatedResponse(
+            ProductResource::collection($products),
+            'Produtos com estoque baixo listados com sucesso'
+        );
+    }
+
     public function store(StoreProductRequest $request): JsonResponse
     {
         $dto = ProductDTO::fromArray($request->validated());
