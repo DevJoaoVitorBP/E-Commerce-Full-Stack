@@ -4,10 +4,8 @@ namespace App\Services;
 
 use App\DTOs\OrderDTO;
 use App\Events\OrderCreated;
-use App\Events\StockLow;
 use App\Jobs\ProcessOrder;
 use App\Models\OrderItem;
-use App\Models\StockMovement;
 use App\Repositories\CartRepository;
 use App\Repositories\OrderRepository;
 use App\Repositories\ProductRepository;
@@ -101,24 +99,6 @@ class OrderService
                     'total_price' => $item['total_price'],
                 ]);
 
-                // Atualizar quantidade em estoque
-                $product = $item['product'];
-                $product->decrement('quantity', $item['quantity']);
-
-                // Registrar movimento de estoque
-                StockMovement::create([
-                    'product_id' => $product->id,
-                    'type' => 'venda',
-                    'quantity' => -$item['quantity'],
-                    'reason' => 'Venda',
-                    'reference_type' => 'order',
-                    'reference_id' => $order->id,
-                ]);
-
-                // Verificar se estoque ficou baixo
-                if ($product->quantity <= $product->min_quantity) {
-                    StockLow::dispatch($product);
-                }
             }
 
             // Limpar carrinho

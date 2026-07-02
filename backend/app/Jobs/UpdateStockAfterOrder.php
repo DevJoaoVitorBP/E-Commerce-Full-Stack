@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\StockMovement;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -41,6 +42,8 @@ class UpdateStockAfterOrder implements ShouldQueue
                 }
 
                 $product->decrement('quantity', $item->quantity);
+
+                Cache::tags(['products'])->forget("product.{$product->id}");
 
                 StockMovement::create([
                     'product_id' => $product->id,

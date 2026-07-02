@@ -315,6 +315,7 @@ const addToCart = async () => {
 onMounted(async () => {
   const id = Number(route.params.id);
   if (id) {
+    productsStore.currentProduct = null;
     await productsStore.fetchProductById(id);
   }
 });
