@@ -50,83 +50,89 @@
       <!-- Tabela de Produtos -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Produto</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
-                Categoria
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Preço</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Estoque</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr
-              v-for="product in productsStore.products"
-              :key="product.id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="font-semibold text-gray-900">{{ product.name }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-gray-600">{{ product.category?.name || '-' }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="font-semibold text-blue-600">R$ {{ formatPrice(product.price) }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="{
-                    'bg-green-100 text-green-800': product.quantity > 10,
-                    'bg-yellow-100 text-yellow-800': product.quantity <= 10 && product.quantity > 0,
-                    'bg-red-100 text-red-800': product.quantity === 0,
-                  }"
-                  class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
-                >
-                  {{ product.quantity }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="
-                    product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  "
-                  class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
-                >
-                  {{ product.active ? 'Ativo' : 'Inativo' }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex gap-2">
-                  <button
-                    @click="openEditModal(product)"
-                    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Produto
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Categoria
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Preço</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Estoque
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Status
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr
+                v-for="product in productsStore.products"
+                :key="product.id"
+                class="hover:bg-gray-50"
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="font-semibold text-gray-900">{{ product.name }}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="text-gray-600">{{ product.category?.name || '-' }}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="font-semibold text-blue-600">R$ {{ formatPrice(product.price) }}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    :class="{
+                      'bg-green-100 text-green-800': product.quantity > 10,
+                      'bg-yellow-100 text-yellow-800':
+                        product.quantity <= 10 && product.quantity > 0,
+                      'bg-red-100 text-red-800': product.quantity === 0,
+                    }"
+                    class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
                   >
-                    Editar
-                  </button>
-                  <button
-                    @click="deleteProduct(product.id)"
-                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    {{ product.quantity }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    :class="
+                      product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                    "
+                    class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
                   >
-                    Deletar
-                  </button>
-                </div>
-              </td>
-            </tr>
+                    {{ product.active ? 'Ativo' : 'Inativo' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex gap-2">
+                    <button
+                      @click="openEditModal(product)"
+                      class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                    >
+                      Editar
+                    </button>
+                    <button
+                      @click="deleteProduct(product.id)"
+                      class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </td>
+              </tr>
 
-            <!-- Estado Vazio -->
-            <tr v-if="productsStore.products.length === 0">
-              <td colspan="6" class="px-6 py-12 text-center text-gray-500">
-                Nenhum produto encontrado.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-
+              <!-- Estado Vazio -->
+              <tr v-if="productsStore.products.length === 0">
+                <td colspan="6" class="px-6 py-12 text-center text-gray-500">
+                  Nenhum produto encontrado.
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
         <!-- Paginação -->
         <div

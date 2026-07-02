@@ -123,7 +123,9 @@
 
           <!-- Preço -->
           <div class="mb-6">
-            <p class="text-3xl md:text-5xl font-extrabold text-blue-600">R$ {{ formatPrice(product.price) }}</p>
+            <p class="text-3xl md:text-5xl font-extrabold text-blue-600">
+              R$ {{ formatPrice(product.price) }}
+            </p>
           </div>
 
           <!-- Status do Estoque -->

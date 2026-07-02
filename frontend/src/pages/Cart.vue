@@ -92,7 +92,9 @@
                 </div>
 
                 <!-- Quantidade e Ações -->
-                <div class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-between">
+                <div
+                  class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-between"
+                >
                   <button
                     @click="removeItem(item.id)"
                     class="text-red-600 hover:text-red-800 font-semibold transition"

@@ -43,60 +43,60 @@
       <!-- Tabela de Categorias -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">ID</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Nome</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
-                Produtos
-              </th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
-            </tr>
-          </thead>
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Nome</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Produtos
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
+              </tr>
+            </thead>
 
-          <tbody class="divide-y divide-gray-200">
-            <tr
-              v-for="category in productsStore.categories"
-              :key="category.id"
-              class="hover:bg-gray-50"
-            >
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-gray-600">#{{ category.id }}</p>
-              </td>
+            <tbody class="divide-y divide-gray-200">
+              <tr
+                v-for="category in productsStore.categories"
+                :key="category.id"
+                class="hover:bg-gray-50"
+              >
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="text-gray-600">#{{ category.id }}</p>
+                </td>
 
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="font-semibold text-gray-900">
-                  {{ category.name }}
-                </p>
-              </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="font-semibold text-gray-900">
+                    {{ category.name }}
+                  </p>
+                </td>
 
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-gray-600">
-                  {{ getProductCount(category.id) }}
-                </p>
-              </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="text-gray-600">
+                    {{ getProductCount(category.id) }}
+                  </p>
+                </td>
 
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex gap-2">
-                  <button
-                    @click="openEditModal(category)"
-                    class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
-                  >
-                    Editar
-                  </button>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex gap-2">
+                    <button
+                      @click="openEditModal(category)"
+                      class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm"
+                    >
+                      Editar
+                    </button>
 
-                  <button
-                    @click="deleteCategory(category.id)"
-                    class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
-                  >
-                    Deletar
-                  </button>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    <button
+                      @click="deleteCategory(category.id)"
+                      class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                    >
+                      Deletar
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

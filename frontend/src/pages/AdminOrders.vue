@@ -46,64 +46,68 @@
       <!-- Tabela de Pedidos -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
         <div class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Pedido</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Data</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Items</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Status</th>
-              <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-200">
-            <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50">
-              <td class="px-6 py-4 whitespace-nowrap">
-                <router-link
-                  :to="`/orders/${order.id}`"
-                  class="font-semibold text-blue-600 hover:underline"
-                >
-                  #{{ order.id }}
-                </router-link>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-gray-600">{{ formatDate(order.created_at) }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="text-gray-600">{{ order.items?.length || 0 }} items</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <p class="font-semibold text-blue-600">R$ {{ formatPrice(order.total) }}</p>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <span
-                  :class="getStatusClass(order.status)"
-                  class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
-                >
-                  {{ translateStatus(order.status) }}
-                </span>
-              </td>
-              <td class="px-6 py-4 whitespace-nowrap">
-                <div class="flex gap-2">
-                  <select
-                    :value="order.status"
-                    @change="
-                      updateOrderStatus(order.id, ($event.target as HTMLSelectElement).value)
-                    "
-                    class="px-3 py-1 border border-gray-300 rounded hover:border-blue-500 text-sm"
+          <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-100">
+              <tr>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Pedido
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Data</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Items</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Total</th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">
+                  Status
+                </th>
+                <th class="px-6 py-3 text-left text-xs font-bold text-gray-700 uppercase">Ações</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr v-for="order in filteredOrders" :key="order.id" class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <router-link
+                    :to="`/orders/${order.id}`"
+                    class="font-semibold text-blue-600 hover:underline"
                   >
-                    <option value="pending">Pendente</option>
-                    <option value="processing">Processando</option>
-                    <option value="shipped">Enviado</option>
-                    <option value="delivered">Entregue</option>
-                    <option value="cancelled">Cancelado</option>
-                  </select>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+                    #{{ order.id }}
+                  </router-link>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="text-gray-600">{{ formatDate(order.created_at) }}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="text-gray-600">{{ order.items?.length || 0 }} items</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <p class="font-semibold text-blue-600">R$ {{ formatPrice(order.total) }}</p>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    :class="getStatusClass(order.status)"
+                    class="px-3 py-1 rounded-full text-sm font-semibold inline-block"
+                  >
+                    {{ translateStatus(order.status) }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex gap-2">
+                    <select
+                      :value="order.status"
+                      @change="
+                        updateOrderStatus(order.id, ($event.target as HTMLSelectElement).value)
+                      "
+                      class="px-3 py-1 border border-gray-300 rounded hover:border-blue-500 text-sm"
+                    >
+                      <option value="pending">Pendente</option>
+                      <option value="processing">Processando</option>
+                      <option value="shipped">Enviado</option>
+                      <option value="delivered">Entregue</option>
+                      <option value="cancelled">Cancelado</option>
+                    </select>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
