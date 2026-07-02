@@ -7,7 +7,7 @@
         <p class="text-gray-600">Bem-vindo de volta, Admin!</p>
       </div>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
         <div v-for="i in 4" :key="i" class="bg-white rounded-lg shadow p-6 animate-pulse">
           <div class="h-4 bg-gray-200 rounded w-3/4 mb-4"></div>
@@ -15,9 +15,9 @@
         </div>
       </div>
 
-      <!-- Stats Cards -->
+      <!-- Cartões de Estatísticas -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-        <!-- Total Products -->
+        <!-- Total de Produtos -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
@@ -32,7 +32,7 @@
           </div>
         </div>
 
-        <!-- Total Categories -->
+        <!-- Total de Categorias -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
@@ -45,7 +45,7 @@
           </div>
         </div>
 
-        <!-- Total Orders -->
+        <!-- Total de Pedidos -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
@@ -60,7 +60,7 @@
           </div>
         </div>
 
-        <!-- Total Revenue -->
+        <!-- Receita Total -->
         <div class="bg-white rounded-lg shadow p-6">
           <div class="flex items-center justify-between">
             <div>
@@ -78,9 +78,9 @@
         </div>
       </div>
 
-      <!-- Management Sections -->
+      <!-- Seções de Gerenciamento -->
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Quick Links -->
+        <!-- Links Rápidos -->
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold text-gray-900 mb-4">Gerenciamento</h2>
           <div class="space-y-3">

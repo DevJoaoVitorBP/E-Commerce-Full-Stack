@@ -17,7 +17,7 @@ class CartItem extends Model
     ];
 
     /**
-     * Get the cart associated with this item
+     * Obtém o carrinho associado a este item
      */
     public function cart(): BelongsTo
     {
@@ -25,7 +25,7 @@ class CartItem extends Model
     }
 
     /**
-     * Get the product associated with this item
+     * Obtém o produto associado a este item
      */
     public function product(): BelongsTo
     {

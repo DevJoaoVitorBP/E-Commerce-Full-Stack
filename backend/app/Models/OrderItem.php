@@ -21,7 +21,7 @@ class OrderItem extends Model
     ];
 
     /**
-     * Get the order associated with this item
+     * Obtém o pedido associado a este item
      */
     public function order(): BelongsTo
     {
@@ -29,7 +29,7 @@ class OrderItem extends Model
     }
 
     /**
-     * Get the product associated with this item
+     * Obtém o produto associado a este item
      */
     public function product(): BelongsTo
     {

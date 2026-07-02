@@ -3,12 +3,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-4xl font-bold mb-12">Carrinho de Compras</h1>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="cartStore.isLoading" class="flex justify-center py-16">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Empty Cart -->
+      <!-- Carrinho Vazio -->
       <div
         v-else-if="cartStore.items.length === 0"
         class="text-center py-16 bg-white rounded-lg shadow"
@@ -35,7 +35,7 @@
         </router-link>
       </div>
 
-      <!-- Cart Items -->
+      <!-- Itens do Carrinho -->
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Items List -->
         <div class="lg:col-span-2">
@@ -65,7 +65,7 @@
                   </svg>
                 </div>
 
-                <!-- Product Info -->
+                <!-- Informações do Produto -->
                 <div class="flex-1">
                   <router-link
                     :to="`/products/${item.product_id}`"
@@ -84,7 +84,7 @@
                   </p>
                 </div>
 
-                <!-- Quantity & Actions -->
+                <!-- Quantidade e Ações -->
                 <div class="flex flex-col items-end justify-between">
                   <button
                     @click="removeItem(item.id)"
@@ -124,7 +124,7 @@
           </div>
         </div>
 
-        <!-- Summary -->
+        <!-- Resumo -->
         <div class="lg:col-span-1">
           <div class="bg-white rounded-lg shadow p-6 sticky top-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Resumo do Pedido</h2>

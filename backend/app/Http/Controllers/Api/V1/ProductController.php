@@ -9,6 +9,7 @@ use App\Http\Resources\ProductResource;
 use App\Services\ProductService;
 use App\Traits\ApiResponses;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 class ProductController extends Controller
@@ -53,6 +54,11 @@ class ProductController extends Controller
             return $this->errorResponse('Erro ao criar produto', null, 400);
         }
 
+        // Fazer upload de imagem se fornecida
+        if ($request->hasFile('image')) {
+            $this->service->uploadProductImage($product->id, $request->file('image'));
+        }
+
         return $this->createdResponse(
             new ProductResource($this->service->getProductById($product->id)),
             'Produto criado com sucesso'
@@ -72,6 +78,10 @@ class ProductController extends Controller
 
         if (! $updated) {
             return $this->errorResponse('Erro ao atualizar produto', null, 400);
+        }
+        // Fazer upload de imagem se fornecida
+        if ($request->hasFile('image')) {
+            $this->service->uploadProductImage($id, $request->file('image'));
         }
 
         return $this->successResponse(
@@ -95,5 +105,49 @@ class ProductController extends Controller
         }
 
         return $this->successResponse(null, 'Produto deletado com sucesso');
+    }
+
+    public function uploadImage(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $product = $this->service->getProductById($id);
+
+        if (! $product) {
+            return $this->notFoundResponse('Produto não encontrado');
+        }
+
+        $uploaded = $this->service->uploadProductImage($id, $request->file('image'));
+
+        if (! $uploaded) {
+            return $this->errorResponse('Erro ao fazer upload da imagem', null, 400);
+        }
+
+        return $this->successResponse(
+            new ProductResource($this->service->getProductById($id)),
+            'Imagem enviada com sucesso'
+        );
+    }
+
+    public function deleteImage(int $id): JsonResponse
+    {
+        $product = $this->service->getProductById($id);
+
+        if (! $product) {
+            return $this->notFoundResponse('Produto não encontrado');
+        }
+
+        $deleted = $this->service->deleteProductImage($id);
+
+        if (! $deleted) {
+            return $this->errorResponse('Erro ao deletar imagem', null, 400);
+        }
+
+        return $this->successResponse(
+            new ProductResource($this->service->getProductById($id)),
+            'Imagem deletada com sucesso'
+        );
     }
 }

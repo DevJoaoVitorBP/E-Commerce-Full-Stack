@@ -16,7 +16,7 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
 
     /**
-     * The attributes that are mass assignable.
+     * Os atributos que são atribuíveis em massa.
      *
      * @var list<string>
      */
@@ -28,7 +28,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * The attributes that should be hidden for serialization.
+     * Os atributos que devem ser ocultos para serialização.
      *
      * @var list<string>
      */
@@ -38,7 +38,7 @@ class User extends Authenticatable
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * Obtém os atributos que devem ser convertidos.
      *
      * @return array<string, string>
      */
@@ -52,7 +52,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the orders for the user
+     * Obtém os pedidos do usuário
      */
     public function orders(): HasMany
     {
@@ -60,7 +60,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the cart for the user
+     * Obtém o carrinho do usuário
      */
     public function cart(): HasMany
     {
@@ -68,7 +68,7 @@ class User extends Authenticatable
     }
 
     /**
-     * Check if the user is an admin
+     * Verifica se o usuário é um administrador
      */
     public function isAdmin(): bool
     {

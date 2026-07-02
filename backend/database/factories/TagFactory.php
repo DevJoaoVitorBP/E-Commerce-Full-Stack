@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 class TagFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * Define o modelo correspondente a esta Factory.
      *
      * @return array<string, mixed>
      */

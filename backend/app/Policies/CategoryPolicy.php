@@ -8,7 +8,7 @@ use App\Models\User;
 class CategoryPolicy
 {
     /**
-     * Determine whether the user can view any models.
+     * Determina se o usuário pode visualizar qualquer modelo.
      */
     public function viewAny(User $user): bool
     {
@@ -16,7 +16,7 @@ class CategoryPolicy
     }
 
     /**
-     * Determine whether the user can view the model.
+     * Determina se o usuário pode visualizar o modelo.
      */
     public function view(User $user, Category $category): bool
     {
@@ -24,7 +24,7 @@ class CategoryPolicy
     }
 
     /**
-     * Determine whether the user can create models.
+     * Determina se o usuário pode criar modelos.
      */
     public function create(User $user): bool
     {
@@ -32,7 +32,7 @@ class CategoryPolicy
     }
 
     /**
-     * Determine whether the user can update the model.
+     * Determina se o usuário pode atualizar o modelo.
      */
     public function update(User $user, Category $category): bool
     {
@@ -40,7 +40,7 @@ class CategoryPolicy
     }
 
     /**
-     * Determine whether the user can delete the model.
+     * Determina se o usuário pode deletar o modelo.
      */
     public function delete(User $user, Category $category): bool
     {

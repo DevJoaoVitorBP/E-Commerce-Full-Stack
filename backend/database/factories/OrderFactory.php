@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class OrderFactory extends Factory
 {
     /**
-     * Define the model's default state.
+     * Define o modelo correspondente a esta Factory.
      *
      * @return array<string, mixed>
      */

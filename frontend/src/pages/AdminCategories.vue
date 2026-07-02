@@ -16,7 +16,7 @@
         </router-link>
       </div>
 
-      <!-- Add Category Form -->
+      <!-- Adicionar Categoria -->
       <div class="bg-white rounded-lg shadow p-6 mb-6">
         <h2 class="text-2xl font-bold text-gray-900 mb-4">Nova Categoria</h2>
 
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <!-- Categories Table -->
+      <!-- Tabela de Categorias -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -99,7 +99,7 @@
       </div>
     </div>
 
-    <!-- Modal -->
+    <!-- Modal de Edição -->
     <EditCategoryModal
       :is-open="isEditOpen"
       :category="selectedCategory"

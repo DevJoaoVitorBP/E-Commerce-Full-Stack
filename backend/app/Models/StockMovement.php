@@ -17,7 +17,7 @@ class StockMovement extends Model
     ];
 
     /**
-     * Get the product associated with this movement
+     * Obtém o produto associado a este movimento
      */
     public function product(): BelongsTo
     {

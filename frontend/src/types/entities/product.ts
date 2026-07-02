@@ -12,6 +12,7 @@ export interface Product extends BaseEntity {
   min_quantity: number;
   active: boolean;
   category_id: number;
+  image_url?: string | null;
   category?: Category | null;
   tags?: Tag[];
 }

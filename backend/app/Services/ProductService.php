@@ -6,11 +6,14 @@ use App\DTOs\ProductDTO;
 use App\Events\ProductCreated;
 use App\Repositories\ProductRepository;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class ProductService
 {
     protected ProductRepository $repository;
+
+    protected ImageService $imageService;
 
     protected const CACHE_TTL = 3600; // 1 hora = 3600 segundos
 
@@ -21,6 +24,7 @@ class ProductService
     public function __construct()
     {
         $this->repository = new ProductRepository;
+        $this->imageService = new ImageService;
     }
 
     public function getAllProducts(array $filters = [])
@@ -44,6 +48,8 @@ class ProductService
         $data = $dto->toArray();
         $data['slug'] = Str::slug($data['name']);
 
+        unset($data['image_path']);
+
         $product = $this->repository->create($data);
 
         if ($product && $dto->tags) {
@@ -64,6 +70,8 @@ class ProductService
         $data = $dto->toArray();
         $data['slug'] = Str::slug($data['name']);
 
+        unset($data['image_path']);
+
         $product = $this->repository->update($id, $data);
 
         if ($product && $dto->tags !== null) {
@@ -78,12 +86,18 @@ class ProductService
 
     public function deleteProduct(int $id): bool
     {
-        $product = $this->repository->delete($id);
+        $product = $this->repository->find($id);
+
+        if ($product && $product->image_path) {
+            $this->imageService->deleteProductImage($product->image_path);
+        }
+
+        $deleted = $this->repository->delete($id);
 
         // Invalidar cache ao deletar
         Cache::tags([self::CACHE_TAG, self::CATEGORY_CACHE_TAG])->flush();
 
-        return $product !== null;
+        return $deleted !== null;
     }
 
     public function checkStockAvailability(int $productId, int $quantity): bool
@@ -111,5 +125,58 @@ class ProductService
             ->remember($cacheKey, self::CACHE_TTL, function () use ($categoryId) {
                 return $this->repository->getByCategory($categoryId);
             });
+    }
+
+    public function uploadProductImage(int $productId, $imageFile): bool
+    {
+        try {
+            $product = $this->repository->find($productId);
+
+            if (! $product) {
+                return false;
+            }
+
+            // Deletar imagem antiga se existir
+            if ($product->image_path) {
+                $this->imageService->deleteProductImage($product->image_path);
+            }
+
+            // Upload da nova imagem
+            $fileName = $this->imageService->uploadProductImage($imageFile);
+
+            if ($fileName) {
+                $this->repository->update($productId, ['image_path' => $fileName]);
+                Cache::tags([self::CACHE_TAG, self::CATEGORY_CACHE_TAG])->flush();
+
+                return true;
+            }
+
+            return false;
+        } catch (\Exception $e) {
+            Log::error('Erro ao fazer upload de imagem do produto: '.$e->getMessage());
+
+            return false;
+        }
+    }
+
+    public function deleteProductImage(int $productId): bool
+    {
+        try {
+            $product = $this->repository->find($productId);
+
+            if (! $product || ! $product->image_path) {
+                return false;
+            }
+
+            $this->imageService->deleteProductImage($product->image_path);
+            $this->repository->update($productId, ['image_path' => null]);
+            Cache::tags([self::CACHE_TAG, self::CATEGORY_CACHE_TAG])->flush();
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Erro ao deletar imagem do produto: '.$e->getMessage());
+
+            return false;
+        }
     }
 }

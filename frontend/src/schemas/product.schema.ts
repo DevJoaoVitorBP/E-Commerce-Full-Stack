@@ -14,6 +14,7 @@ export const createProductSchema = z.object({
     .max(999999, 'Quantidade muito alta')
     .int('Quantidade deve ser um número inteiro'),
   category_id: z.number().min(1, 'Selecione uma categoria').int('ID da categoria inválido'),
+  image: z.instanceof(File).optional().nullable(),
   active: z.boolean().default(true),
 });
 
@@ -28,6 +29,7 @@ export const updateProductSchema = z.object({
     .min(0, 'Quantidade não pode ser negativa')
     .max(999999, 'Quantidade muito alta')
     .int('Quantidade deve ser um número inteiro'),
+  image: z.instanceof(File).optional().nullable(),
   active: z.boolean().optional(),
 });
 

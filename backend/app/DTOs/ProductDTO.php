@@ -16,6 +16,7 @@ class ProductDTO
         public bool $active = true,
         public int $category_id = 0,
         public ?array $tags = null,
+        public ?string $image_path = null,
     ) {}
 
     public static function fromArray(array $data): self
@@ -32,6 +33,7 @@ class ProductDTO
             active: (bool) ($data['active'] ?? true),
             category_id: (int) ($data['category_id'] ?? 0),
             tags: $data['tags'] ?? null,
+            image_path: $data['image_path'] ?? null,
         );
     }
 
@@ -48,6 +50,7 @@ class ProductDTO
             'min_quantity' => $this->min_quantity,
             'active' => $this->active,
             'category_id' => $this->category_id,
+            'image_path' => $this->image_path,
             'tags' => $this->tags,
         ];
     }

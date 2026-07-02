@@ -5,7 +5,7 @@
       <p class="text-center text-gray-600 mb-8">Acesse sua conta</p>
 
       <form @submit.prevent="handleLogin" class="space-y-4">
-        <!-- Email -->
+        <!-- Campo de Email -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Email</label>
           <input
@@ -17,7 +17,7 @@
           />
         </div>
 
-        <!-- Password -->
+        <!-- Campo de Senha -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Senha</label>
           <input
@@ -29,12 +29,12 @@
           />
         </div>
 
-        <!-- Error Message -->
+        <!-- Mensagem de erro -->
         <div v-if="authStore.error" class="p-4 bg-red-100 text-red-800 rounded-lg text-sm">
           {{ authStore.error }}
         </div>
 
-        <!-- Submit -->
+        <!-- Enviar -->
         <button
           :disabled="authStore.isLoading"
           type="submit"
@@ -45,7 +45,7 @@
         </button>
       </form>
 
-      <!-- Register Link -->
+      <!-- Link de Registro -->
       <p class="text-center text-gray-600 mt-6">
         Não tem conta?
         <router-link to="/register" class="text-blue-600 hover:underline font-medium">
@@ -53,7 +53,7 @@
         </router-link>
       </p>
 
-      <!-- Demo Credentials -->
+      <!-- Credenciais de Teste -->
       <div class="mt-8 p-4 bg-blue-50 rounded-lg border border-blue-200">
         <p class="text-sm font-medium text-blue-900 mb-2">Credenciais de Teste:</p>
         <p class="text-sm text-blue-800">Email: admin@example.com</p>

@@ -4,10 +4,13 @@
     "ignoreDeprecations": "6.0",
     "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.app.tsbuildinfo",
     "baseUrl": ".",
+    "lib": ["ES2020", "DOM", "DOM.Iterable", "WebWorker"],
     "paths": {
       "@/*": ["./src/*"]
     },
     "types": ["vite/client"],
+    "noImplicitAny": false,
+    "skipLibCheck": true,
 
     /* Linting */
     "noUnusedLocals": false,

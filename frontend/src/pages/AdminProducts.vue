@@ -23,7 +23,7 @@
         </div>
       </div>
 
-      <!-- Search & Filter -->
+      <!-- Busca e Filtro -->
       <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex gap-4">
           <input
@@ -42,12 +42,12 @@
         </div>
       </div>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="productsStore.isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Products Table -->
+      <!-- Tabela de Produtos -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
@@ -117,7 +117,7 @@
               </td>
             </tr>
 
-            <!-- Empty state -->
+            <!-- Estado Vazio -->
             <tr v-if="productsStore.products.length === 0">
               <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                 Nenhum produto encontrado.
@@ -126,7 +126,7 @@
           </tbody>
         </table>
 
-        <!-- Pagination -->
+        <!-- Paginação -->
         <div
           class="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50"
         >

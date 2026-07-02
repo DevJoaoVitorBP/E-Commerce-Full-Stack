@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\ConvertMethodInFormData;
 use App\Http\Middleware\RateLimitMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -14,9 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prepend(ConvertMethodInFormData::class);
+
         $middleware->alias([
             'admin' => AdminMiddleware::class,
             'rate_limit' => RateLimitMiddleware::class,
+            'convert_method_in_form_data' => ConvertMethodInFormData::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

@@ -5,7 +5,7 @@
       <p class="text-center text-gray-600 mb-8">Crie sua conta</p>
 
       <form @submit.prevent="handleRegister" class="space-y-4">
-        <!-- Name -->
+        <!-- Nome -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Nome</label>
           <input
@@ -41,7 +41,7 @@
           />
         </div>
 
-        <!-- Password Confirmation -->
+        <!-- Confirmação de Senha -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Confirmar Senha</label>
           <input
@@ -53,12 +53,12 @@
           />
         </div>
 
-        <!-- Error Message -->
+        <!-- Mensagem de Erro -->
         <div v-if="authStore.error" class="p-4 bg-red-100 text-red-800 rounded-lg text-sm">
           {{ authStore.error }}
         </div>
 
-        <!-- Submit -->
+        <!-- Enviar -->
         <button
           :disabled="authStore.isLoading"
           type="submit"
@@ -69,7 +69,7 @@
         </button>
       </form>
 
-      <!-- Login Link -->
+      <!-- Link de Login -->
       <p class="text-center text-gray-600 mt-6">
         Já tem conta?
         <router-link to="/login" class="text-blue-600 hover:underline font-medium">

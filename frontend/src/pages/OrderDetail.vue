@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Back Button -->
+      <!-- Botão de Voltar -->
       <router-link
         to="/orders"
         class="inline-flex items-center text-blue-600 hover:text-blue-800 mb-8"
@@ -17,12 +17,12 @@
         Voltar aos Pedidos
       </router-link>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="ordersStore.isLoading" class="flex justify-center py-16">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Error State -->
+      <!-- Estado de Erro -->
       <div
         v-else-if="ordersStore.error"
         class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8"
@@ -30,7 +30,7 @@
         <p class="text-red-600">{{ ordersStore.error }}</p>
       </div>
 
-      <!-- Order Details -->
+      <!-- Detalhes do Pedido -->
       <div v-else-if="order" class="space-y-6">
         <!-- Header -->
         <div class="bg-white rounded-lg shadow p-6">
@@ -59,7 +59,7 @@
           </div>
         </div>
 
-        <!-- Items -->
+        <!-- Itens -->
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold text-gray-900 mb-6">Itens do Pedido</h2>
           <div v-if="order.items && order.items.length > 0" class="space-y-4">
@@ -68,7 +68,7 @@
               :key="item.id"
               class="flex gap-4 border-b pb-4 last:border-b-0 last:pb-0"
             >
-              <!-- Product Image -->
+              <!-- Imagem do Produto -->
               <div
                 class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center"
               >
@@ -87,7 +87,7 @@
                 </svg>
               </div>
 
-              <!-- Item Details -->
+              <!-- Detalhes do Item -->
               <div class="flex-1">
                 <p class="text-lg font-semibold text-gray-900">
                   {{ item.product?.name || 'Produto' }}
@@ -111,7 +111,7 @@
           <p v-else class="text-gray-500">Nenhum item neste pedido</p>
         </div>
 
-        <!-- Shipping Address -->
+        <!-- Endereço de Entrega -->
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold text-gray-900 mb-6">Endereço de Entrega</h2>
           <div v-if="order.shipping_address" class="text-gray-700 leading-relaxed space-y-2">
@@ -131,7 +131,7 @@
           <p v-else class="text-gray-500">Não informado</p>
         </div>
 
-        <!-- Order Summary -->
+        <!-- Resumo do Pedido -->
         <div class="bg-white rounded-lg shadow p-6">
           <h2 class="text-2xl font-bold text-gray-900 mb-6">Resumo</h2>
           <div class="space-y-3 max-w-md ml-auto">
@@ -155,7 +155,7 @@
         </div>
       </div>
 
-      <!-- Not Found -->
+      <!-- Não Encontrado -->
       <div v-else class="text-center py-12 bg-white rounded-lg shadow">
         <p class="text-gray-500 text-lg">Pedido não encontrado</p>
       </div>

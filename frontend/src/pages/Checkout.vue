@@ -3,7 +3,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <h1 class="text-4xl font-bold mb-12">Checkout</h1>
 
-      <!-- Redirect if cart is empty -->
+      <!-- Redirecionar se o carrinho estiver vazio -->
       <div v-if="cartStore.items.length === 0" class="text-center py-16 bg-white rounded-lg shadow">
         <p class="text-gray-500 text-lg mb-8">
           Seu carrinho está vazio. Adicione produtos antes de fazer checkout.
@@ -16,12 +16,12 @@
         </router-link>
       </div>
 
-      <!-- Checkout Form -->
+      <!-- Formulário de Checkout -->
       <div v-else class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Form -->
+        <!-- Formulário -->
         <div class="lg:col-span-2">
           <form @submit.prevent="submitOrder" class="space-y-8">
-            <!-- Shipping Address -->
+            <!-- Endereço de Entrega -->
             <div class="bg-white rounded-lg shadow p-6">
               <h2 class="text-2xl font-bold text-gray-900 mb-6">Endereço de Entrega</h2>
 
@@ -114,7 +114,7 @@
               </div>
             </div>
 
-            <!-- Notes -->
+            <!-- Observações -->
             <div class="bg-white rounded-lg shadow p-6">
               <h2 class="text-2xl font-bold text-gray-900 mb-6">Observações</h2>
               <textarea
@@ -125,7 +125,7 @@
               />
             </div>
 
-            <!-- Submit Button -->
+            <!-- Botão de Envio -->
             <button
               type="submit"
               :disabled="isSubmitting"
@@ -136,7 +136,7 @@
           </form>
         </div>
 
-        <!-- Order Summary -->
+        <!-- Resumo do Pedido -->
         <div class="lg:col-span-1">
           <div class="bg-white rounded-lg shadow p-6 sticky top-6">
             <h2 class="text-2xl font-bold text-gray-900 mb-6">Resumo do Pedido</h2>
@@ -177,12 +177,12 @@
               </div>
             </div>
 
-            <!-- Error Message -->
+            <!-- Mensagem de Erro -->
             <div v-if="errorMessage" class="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg">
               <p class="text-red-600 text-sm">{{ errorMessage }}</p>
             </div>
 
-            <!-- Success Message -->
+            <!-- Mensagem de Sucesso -->
             <div
               v-if="successMessage"
               class="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg"
@@ -201,7 +201,6 @@ import { ref, reactive } from 'vue';
 import { useRouter } from 'vue-router';
 import { useCartStore } from '@/stores/cartStore';
 import { useOrdersStore } from '@/stores/ordersStore';
-// import error handling utility if needed
 import { getErrorMessage } from '@/utils/errorHandler';
 
 const router = useRouter();
