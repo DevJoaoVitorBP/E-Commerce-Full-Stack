@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h1 class="text-4xl font-bold text-gray-900">Gerenciar Produtos</h1>
+          <h1 class="text-2xl md:text-4xl font-bold text-gray-900">Gerenciar Produtos</h1>
           <p class="text-gray-600 mt-1">Total: {{ productsStore.pagination.total }} produtos</p>
         </div>
         <div class="flex gap-3">
@@ -49,6 +49,7 @@
 
       <!-- Tabela de Produtos -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
@@ -126,9 +127,10 @@
           </tbody>
         </table>
 
+        </div>
         <!-- Paginação -->
         <div
-          class="flex items-center justify-between px-6 py-4 border-t border-gray-200 bg-gray-50"
+          class="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:justify-between px-6 py-4 border-t border-gray-200 bg-gray-50"
         >
           <div class="text-sm text-gray-600">
             Exibindo

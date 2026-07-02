@@ -4,7 +4,7 @@
       <!-- Header -->
       <div class="flex items-center justify-between mb-8">
         <div>
-          <h1 class="text-4xl font-bold text-gray-900">Gerenciar Categorias</h1>
+          <h1 class="text-2xl md:text-4xl font-bold text-gray-900">Gerenciar Categorias</h1>
           <p class="text-gray-600 mt-1">Total: {{ productsStore.categories.length }} categorias</p>
         </div>
 
@@ -42,6 +42,7 @@
 
       <!-- Tabela de Categorias -->
       <div class="bg-white rounded-lg shadow overflow-hidden">
+        <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
@@ -96,6 +97,7 @@
             </tr>
           </tbody>
         </table>
+        </div>
       </div>
     </div>
 
