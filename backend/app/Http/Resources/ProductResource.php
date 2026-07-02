@@ -20,6 +20,7 @@ class ProductResource extends JsonResource
             'min_quantity' => $this->min_quantity,
             'active' => $this->active,
             'category_id' => $this->category_id,
+            'image_url' => $this->getImageUrl(),
             'category' => [
                 'id' => $this->category->id,
                 'name' => $this->category->name,

@@ -13,7 +13,7 @@ use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvid
 class AuthServiceProvider extends ServiceProvider
 {
     /**
-     * The model to policy mappings for the application.
+     * Mapeamentos de modelo para política da aplicação.
      *
      * @var array<class-string, class-string>
      */
@@ -24,7 +24,7 @@ class AuthServiceProvider extends ServiceProvider
     ];
 
     /**
-     * Register any authentication / authorization services.
+     * Registra quaisquer serviços de autenticação / autorização.
      */
     public function boot(): void
     {

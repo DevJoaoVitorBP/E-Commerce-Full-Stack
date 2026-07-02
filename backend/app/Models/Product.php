@@ -23,6 +23,7 @@ class Product extends Model
         'min_quantity',
         'active',
         'category_id',
+        'image_path',
     ];
 
     protected $casts = [
@@ -32,7 +33,7 @@ class Product extends Model
     ];
 
     /**
-     * Get the category this product belongs to
+     * Obter a categoria associada a este produto
      */
     public function category(): BelongsTo
     {
@@ -40,7 +41,7 @@ class Product extends Model
     }
 
     /**
-     * Get the tags associated with this product
+     * Obter as tags associadas a este produto
      */
     public function tags(): BelongsToMany
     {
@@ -48,7 +49,7 @@ class Product extends Model
     }
 
     /**
-     * Get order items for this product
+     * Obter os itens de pedido associados a este produto
      */
     public function orderItems(): HasMany
     {
@@ -56,7 +57,7 @@ class Product extends Model
     }
 
     /**
-     * Get stock movements for this product
+     * Obter os movimentos de estoque associados a este produto
      */
     public function stockMovements(): HasMany
     {
@@ -64,7 +65,7 @@ class Product extends Model
     }
 
     /**
-     * Scope to get only active products
+     * Escopo para obter apenas produtos ativos
      */
     public function scopeActive($query)
     {
@@ -72,7 +73,7 @@ class Product extends Model
     }
 
     /**
-     * Scope to get products with stock available
+     * Escopo para obter produtos com estoque disponível
      */
     public function scopeInStock($query)
     {
@@ -80,10 +81,22 @@ class Product extends Model
     }
 
     /**
-     * Scope to get products with low stock
+     * Escopo para obter produtos com baixo estoque
      */
     public function scopeLowStock($query)
     {
         return $query->whereColumn('quantity', '<=', 'min_quantity');
+    }
+
+    /**
+     * Obter a URL completa da imagem do produto
+     */
+    public function getImageUrl(): ?string
+    {
+        if (! $this->image_path) {
+            return null;
+        }
+
+        return asset('storage/products/'.$this->image_path);
     }
 }

@@ -11,12 +11,12 @@
         </router-link>
       </div>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="ordersStore.isLoading" class="flex justify-center py-16">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Error State -->
+      <!-- Estado de Erro -->
       <div
         v-else-if="ordersStore.error"
         class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8"
@@ -24,7 +24,7 @@
         <p class="text-red-600">{{ ordersStore.error }}</p>
       </div>
 
-      <!-- Empty State -->
+      <!-- Estado Vazio -->
       <div
         v-else-if="ordersStore.orders.length === 0"
         class="text-center py-16 bg-white rounded-lg shadow"
@@ -51,7 +51,7 @@
         </router-link>
       </div>
 
-      <!-- Orders Table -->
+      <!-- Tabela de Pedidos -->
       <div v-else class="space-y-4">
         <div
           v-for="order in ordersStore.orders"
@@ -66,9 +66,9 @@
               <p class="text-gray-500 text-sm mt-1">{{ formatDate(order.created_at) }}</p>
             </div>
 
-            <!-- Items Count -->
+            <!-- Contagem de Itens -->
             <div>
-              <p class="text-gray-600 text-sm font-medium mb-1">Items</p>
+              <p class="text-gray-600 text-sm font-medium mb-1">Itens</p>
               <p class="text-lg font-bold text-gray-900">{{ order.items?.length || 0 }}</p>
             </div>
 
@@ -89,7 +89,7 @@
               </span>
             </div>
 
-            <!-- Action -->
+            <!-- Ação -->
             <div class="flex items-end">
               <router-link
                 :to="`/orders/${order.id}`"

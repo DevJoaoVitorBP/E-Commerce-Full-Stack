@@ -35,7 +35,7 @@ class Order extends Model
     ];
 
     /**
-     * Get the user associated with this order
+     * Obtém o usuário associado a este pedido
      */
     public function user(): BelongsTo
     {
@@ -43,7 +43,7 @@ class Order extends Model
     }
 
     /**
-     * Get order items
+     * Obtém os itens do pedido
      */
     public function items(): HasMany
     {

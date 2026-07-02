@@ -16,7 +16,7 @@ class Tag extends Model
     ];
 
     /**
-     * Get the products associated with this tag
+     * Obtém os produtos associados a esta tag
      */
     public function products(): BelongsToMany
     {

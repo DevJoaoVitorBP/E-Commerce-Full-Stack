@@ -22,6 +22,7 @@ class StoreProductRequest extends FormRequest
             'min_quantity' => 'nullable|integer|min:0',
             'category_id' => 'required|exists:categories,id',
             'active' => 'nullable|boolean',
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'tags' => 'nullable|array',
             'tags.*' => 'exists:tags,id',
         ];
@@ -36,6 +37,9 @@ class StoreProductRequest extends FormRequest
             'price.min' => 'O preço deve ser maior que 0',
             'category_id.required' => 'A categoria é obrigatória',
             'category_id.exists' => 'A categoria selecionada não existe',
+            'image.image' => 'O arquivo deve ser uma imagem',
+            'image.mimes' => 'A imagem deve estar em formato JPEG, PNG, JPG ou GIF',
+            'image.max' => 'A imagem não pode exceder 2MB',
         ];
     }
 }

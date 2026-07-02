@@ -24,9 +24,21 @@ function cleanFilters(filters: ProductFilters): ProductFilters {
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em ms
 
-interface CacheEntry {
+interface ProductsPagination {
+  current_page: number;
+  per_page: number;
+  total: number;
+  last_page: number;
+}
+
+interface ProductsCacheData {
+  products: Product[];
+  pagination: ProductsPagination;
+}
+
+interface CacheEntry<T> {
   timestamp: number;
-  data: any;
+  data: T;
 }
 
 export const useProductsStore = defineStore('products', () => {
@@ -35,20 +47,22 @@ export const useProductsStore = defineStore('products', () => {
   const currentProduct = ref<Product | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const pagination = ref({
+  const pagination = ref<ProductsPagination>({
     current_page: 1,
     per_page: 15,
     total: 0,
     last_page: 1,
   });
 
-  const productsCache = ref<Map<string, CacheEntry>>(new Map());
-  const categoriesCache = ref<CacheEntry | null>(null);
+  const productsCache = ref<Map<string, CacheEntry<ProductsCacheData>>>(new Map());
+  const categoriesCache = ref<CacheEntry<Category[]> | null>(null);
 
   const hasNextPage = computed(() => pagination.value.current_page < pagination.value.last_page);
   const hasPrevPage = computed(() => pagination.value.current_page > 1);
 
-  function isCacheValid(cacheEntry: CacheEntry | null | undefined): boolean {
+  function isCacheValid<T>(
+    cacheEntry: CacheEntry<T> | null | undefined
+  ): cacheEntry is CacheEntry<T> {
     if (!cacheEntry) return false;
     return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
   }
@@ -58,8 +72,8 @@ export const useProductsStore = defineStore('products', () => {
     const cached = productsCache.value.get(cacheKey);
 
     if (isCacheValid(cached)) {
-      products.value = cached!.data.products;
-      pagination.value = cached!.data.pagination;
+      products.value = cached.data.products;
+      pagination.value = cached.data.pagination;
       return;
     }
 
@@ -105,7 +119,7 @@ export const useProductsStore = defineStore('products', () => {
 
   async function fetchCategories() {
     if (isCacheValid(categoriesCache.value)) {
-      categories.value = categoriesCache.value!.data;
+      categories.value = categoriesCache.value.data;
       return;
     }
 
@@ -150,7 +164,7 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  async function createProduct(productData: Partial<Product>) {
+  async function createProduct(productData: Partial<Product> | FormData) {
     isLoading.value = true;
     error.value = null;
     try {
@@ -165,11 +179,17 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  async function updateProduct(id: number, productData: Partial<Product>) {
+  async function updateProduct(id: number, productData: Partial<Product> | FormData) {
     isLoading.value = true;
     error.value = null;
     try {
-      const response = await api.put(`/products/${id}`, productData);
+      let response;
+      if (productData instanceof FormData) {
+        // PHP não suporta multipart/form-data em PUT - enviar como POST com _method: PUT
+        response = await api.post(`/products/${id}`, productData);
+      } else {
+        response = await api.put(`/products/${id}`, productData);
+      }
       const index = products.value.findIndex((p) => p.id === id);
       if (index !== -1) {
         products.value[index] = response.data.data;

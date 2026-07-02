@@ -10,17 +10,17 @@ use Symfony\Component\HttpFoundation\Response;
 class RateLimitMiddleware
 {
     /**
-     * Rate limiter instance
+     * Instância do limitador de taxa
      */
     protected RateLimiter $limiter;
 
     /**
-     * Maximum requests per minute
+     * Máximo de requisições por minuto
      */
     protected const MAX_REQUESTS = 100;
 
     /**
-     * Time window in seconds (1 minute)
+     * Janela de tempo em segundos (1 minuto)
      */
     protected const TIME_WINDOW = 60;
 
@@ -30,24 +30,24 @@ class RateLimitMiddleware
     }
 
     /**
-     * Handle an incoming request.
+     * Lida uma solicitação HTTP e aplica o limite de taxa.
      *
      * @param  Closure(Request): (Response)  $next
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // Use IP address as the rate limit key
+        // Use o endereço IP como chave para o limite de taxa
         $key = 'rate_limit:'.$request->ip();
 
-        // Increment request count
+        // Incrementa a contagem de requisições
         $requests = $this->limiter->attempts($key);
 
-        // If first request, set expiration
+        // Se for a primeira requisição, define a expiração
         if ($requests === 1) {
             $this->limiter->hit($key, self::TIME_WINDOW);
         }
 
-        // Check if limit exceeded
+        // Verifica se o limite foi excedido
         if ($requests > self::MAX_REQUESTS) {
             return response()->json([
                 'success' => false,
@@ -57,7 +57,7 @@ class RateLimitMiddleware
 
         $response = $next($request);
 
-        // Add rate limit headers
+        // Adiciona os cabeçalhos de limite de taxa
         return $response
             ->header('X-RateLimit-Limit', self::MAX_REQUESTS)
             ->header('X-RateLimit-Remaining', max(0, self::MAX_REQUESTS - $requests))

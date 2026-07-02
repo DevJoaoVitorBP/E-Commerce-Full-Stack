@@ -9,7 +9,7 @@
         <span class="font-bold text-lg">E-Commerce</span>
       </router-link>
 
-      <!-- Menu Center -->
+      <!-- Menu central -->
       <div class="hidden md:flex items-center gap-8">
         <router-link to="/products" class="text-gray-700 hover:text-blue-600 transition">
           Produtos
@@ -23,7 +23,7 @@
         </router-link>
       </div>
 
-      <!-- Menu Right -->
+      <!-- Menu direito -->
       <div class="flex items-center gap-6">
         <!-- Cart -->
         <router-link v-if="authStore.isAuthenticated" to="/cart" class="relative">
@@ -48,7 +48,7 @@
           </span>
         </router-link>
 
-        <!-- User Menu -->
+        <!-- Menu do usuário -->
         <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
           <div class="text-sm text-gray-700">{{ authStore.user?.name }}</div>
           <button
@@ -59,7 +59,7 @@
           </button>
         </div>
 
-        <!-- Auth Links -->
+        <!-- Links de autenticação -->
         <div v-else class="flex items-center gap-4">
           <router-link to="/login" class="text-gray-700 hover:text-blue-600 transition font-medium">
             Login

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 class AdminMiddleware
 {
     /**
-     * Handle an incoming request.
+     * Lida uma solicitação HTTP e verifica se o usuário é um administrador.
      *
      * @param  Closure(Request): (Response)  $next
      */

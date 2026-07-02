@@ -15,7 +15,7 @@
         </router-link>
       </div>
 
-      <!-- Filter Options -->
+      <!-- Filtro de Pedidos -->
       <div class="bg-white rounded-lg shadow p-6 mb-6">
         <div class="flex gap-4 flex-wrap">
           <select
@@ -38,12 +38,12 @@
         </div>
       </div>
 
-      <!-- Loading State -->
+      <!-- Estado de Carregamento -->
       <div v-if="ordersStore.isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Orders Table -->
+      <!-- Tabela de Pedidos -->
       <div v-else class="bg-white rounded-lg shadow overflow-hidden">
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">

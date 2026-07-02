@@ -17,7 +17,7 @@ class Cart extends Model
     ];
 
     /**
-     * Get the user associated with this cart
+     * Obtém o usuário associado a este carrinho
      */
     public function user(): BelongsTo
     {
@@ -25,7 +25,7 @@ class Cart extends Model
     }
 
     /**
-     * Get cart items
+     * Obtém os itens do carrinho
      */
     public function items(): HasMany
     {

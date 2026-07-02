@@ -22,9 +22,21 @@ export interface CreateOrderData {
 
 const CACHE_DURATION = 5 * 60 * 1000; // 5 minutos em ms
 
+interface OrdersPagination {
+  current_page: number;
+  per_page: number;
+  total: number;
+  last_page: number;
+}
+
+interface OrdersCacheData {
+  orders: Order[];
+  pagination: OrdersPagination;
+}
+
 interface CacheEntry {
   timestamp: number;
-  data: any;
+  data: OrdersCacheData;
 }
 
 export const useOrdersStore = defineStore('orders', () => {
@@ -32,7 +44,7 @@ export const useOrdersStore = defineStore('orders', () => {
   const currentOrder = ref<Order | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const pagination = ref({
+  const pagination = ref<OrdersPagination>({
     current_page: 1,
     per_page: 10,
     total: 0,

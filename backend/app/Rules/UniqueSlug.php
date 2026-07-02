@@ -22,7 +22,6 @@ class UniqueSlug implements ValidationRule
     {
         $query = DB::table($this->table)->where('slug', $value);
 
-        // Se estamos editando, ignorar o ID atual
         if ($this->ignoreId) {
             $query->where('id', '!=', $this->ignoreId);
         }

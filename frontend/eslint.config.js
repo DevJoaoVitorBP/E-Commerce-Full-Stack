@@ -1,6 +1,7 @@
 import js from '@eslint/js'
 import pluginVue from 'eslint-plugin-vue'
 import tseslint from 'typescript-eslint'
+import globals from 'globals'
 
 export default [
   {
@@ -13,19 +14,7 @@ export default [
     files: ['src/**/*.{js,ts,jsx,tsx,vue}'],
     languageOptions: {
       globals: {
-        console: 'readonly',
-        window: 'readonly',
-        document: 'readonly',
-        navigator: 'readonly',
-        localStorage: 'readonly',
-        sessionStorage: 'readonly',
-        fetch: 'readonly',
-        alert: 'readonly',
-        confirm: 'readonly',
-        setTimeout: 'readonly',
-        setInterval: 'readonly',
-        clearTimeout: 'readonly',
-        clearInterval: 'readonly',
+        ...globals.browser,
       },
       parserOptions: {
         parser: tseslint.parser,
@@ -35,10 +24,9 @@ export default [
     },
     rules: {
       'vue/multi-word-component-names': 'off',
-      '@typescript-eslint/no-unused-vars': 'warn',
+      '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
     },
   },
 ]
-

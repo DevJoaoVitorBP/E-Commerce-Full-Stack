@@ -17,16 +17,23 @@ api.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Se for FormData, configurar corretamente
-    if (config.data instanceof FormData) {
-      // Deixar navegador/Axios detectar Content-Type automaticamente para FormData
-      // NÃO tocar em Content-Type permite que o navegador configure multipart/form-data
-      delete config.headers['Content-Type'];
-      // Desabilitar transformação de dados para FormData
-      config.transformRequest = [(data) => data];
-    } else if (!config.headers['Content-Type']) {
+    // Se for FormData, NÃO definir Content-Type (deixar axios/navegador detectar)
+    if (!(config.data instanceof FormData)) {
       config.headers['Content-Type'] = 'application/json';
     }
+
+    // DEBUG
+    console.log('🔍 REQUEST CONFIG:', {
+      method: config.method,
+      url: config.url,
+      hasFormData: config.data instanceof FormData,
+      contentType: config.headers['Content-Type'],
+      dataKeys:
+        config.data instanceof FormData
+          ? Array.from((config.data as FormData).entries())
+          : Object.keys(config.data || {}),
+      fullData: config.data,
+    });
 
     return config;
   },
