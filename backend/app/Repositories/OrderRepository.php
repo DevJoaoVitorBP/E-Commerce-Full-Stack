@@ -26,6 +26,11 @@ class OrderRepository extends BaseRepository
         return $this->model->where('status', 'pending')->latest()->paginate(15);
     }
 
+    public function getAllOrders()
+    {
+        return $this->model->latest()->get();
+    }
+
     public function findWithItems(int $id)
     {
         return $this->model->with('items.product')->find($id);

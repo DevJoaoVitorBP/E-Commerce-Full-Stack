@@ -29,6 +29,20 @@ class OrderService
         $this->cartService = new CartService;
     }
 
+    /*
+     * Aqui a ideia seria implementarmos a páginação, esta função seria utilizado na tela do admin
+     * porém pensando no prazo para entrega do teste e como também no momento não teria grandes impactos na performance, optei por não implementar a paginação, mas deixei o método pronto para ser utilizado futuramente.
+     * o método ficará sem a paginação, se tivesse ficaria assim:
+     * public function getAllOrders(int $page = 1, int $perPage = 15)
+     * {
+     *     return $this->orderRepository->getAllOrdersWithPagination($page, $perPage);
+     * }
+    */
+    public function getAllOrders()
+    {
+        return $this->orderRepository->getAllOrders();
+    }
+
     public function getUserOrders(int $userId)
     {
         return $this->orderRepository->getByUser($userId);
