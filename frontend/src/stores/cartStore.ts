@@ -19,7 +19,10 @@ export const useCartStore = defineStore('cart', () => {
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  const itemCount = computed(() => items.value.length);
+  const itemCount = computed(() =>
+    items.value.reduce((sum: number, item: CartItem) => sum + item.quantity, 0)
+  );
+
   const total = computed(() =>
     items.value.reduce(
       (sum: number, item: CartItem) => sum + (item.product?.price ?? 0) * item.quantity,
@@ -28,7 +31,7 @@ export const useCartStore = defineStore('cart', () => {
   );
 
   function syncItems() {
-    items.value = cart.value?.items ?? [];
+    items.value = [...(cart.value?.items ?? [])];
   }
 
   async function fetchCart() {
@@ -52,6 +55,8 @@ export const useCartStore = defineStore('cart', () => {
       const response = await api.post('/cart/items', { product_id: productId, quantity });
       cart.value = response.data.data;
       syncItems();
+
+      await fetchCart();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao adicionar item');
       throw err;
@@ -64,9 +69,9 @@ export const useCartStore = defineStore('cart', () => {
     isLoading.value = true;
     error.value = null;
     try {
-      const response = await api.put(`/cart/items/${itemId}`, { quantity });
-      cart.value = response.data.data;
-      syncItems();
+      await api.put(`/cart/items/${itemId}`, { quantity });
+
+      await fetchCart();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao atualizar item');
       throw err;
