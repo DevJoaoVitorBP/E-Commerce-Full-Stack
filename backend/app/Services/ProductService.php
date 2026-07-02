@@ -107,9 +107,11 @@ class ProductService
         return $product && $product->quantity >= $quantity;
     }
 
-    public function getLowStockProducts()
+    public function getLowStockProducts(array $filters = [])
     {
-        return $this->repository->getLowStock();
+        $filters['per_page'] = $filters['per_page'] ?? 10;
+
+        return $this->repository->getLowStock($filters);
     }
 
     public function searchProducts(string $query)

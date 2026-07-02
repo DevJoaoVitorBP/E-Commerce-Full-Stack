@@ -29,9 +29,11 @@ class ProductRepository extends BaseRepository
             ->paginate(15);
     }
 
-    public function getLowStock()
+    public function getLowStock(array $filters = [])
     {
-        return $this->model->lowStock()->paginate(15);
+        $per_page = $filters['per_page'] ?? 10;
+
+        return $this->model->lowStock()->paginate($per_page);
     }
 
     public function getWithFilters(array $filters)
