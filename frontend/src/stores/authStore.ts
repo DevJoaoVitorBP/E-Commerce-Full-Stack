@@ -2,6 +2,7 @@ import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import api from '@/services/api';
 import { getErrorMessage } from '@/utils/errorHandler';
+import { useCartStore } from './cartStore';
 
 export interface User {
   id: number;
@@ -36,6 +37,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('token', newToken);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       await fetchUser();
+
+      const cartStore = useCartStore();
+      await cartStore.fetchCart();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro no registro');
       throw err;
@@ -54,6 +58,9 @@ export const useAuthStore = defineStore('auth', () => {
       localStorage.setItem('token', newToken);
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       await fetchUser();
+
+      const cartStore = useCartStore();
+      await cartStore.fetchCart();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao fazer login');
       throw err;
@@ -89,6 +96,9 @@ export const useAuthStore = defineStore('auth', () => {
       if (token.value) {
         api.defaults.headers.common['Authorization'] = `Bearer ${token.value}`;
         await fetchUser();
+
+        const cartStore = useCartStore();
+        await cartStore.fetchCart();
       }
     } catch {
       logout();

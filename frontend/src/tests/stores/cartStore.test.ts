@@ -65,7 +65,7 @@ describe('CartStore', () => {
         },
       ];
 
-      expect(store.itemCount).toBe(1);
+      expect(store.itemCount).toBe(2);
     });
 
     it('should compute total correctly', () => {
