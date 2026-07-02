@@ -6,6 +6,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\Tag;
 use Illuminate\Database\Seeder;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -24,15 +25,17 @@ class ProductSeeder extends Seeder
             $response = Http::timeout(30)->get(
                 'https://dummyjson.com/products?limit=100&select=title,description,price,category,images,stock'
             );
-        } catch (\Illuminate\Http\Client\ConnectionException $e) {
-            $this->command->warn('Não foi possível conectar à API (' . $e->getMessage() . '). Usando factory.');
+        } catch (ConnectionException $e) {
+            $this->command->warn('Não foi possível conectar à API ('.$e->getMessage().'). Usando factory.');
             $this->runWithFactory();
+
             return;
         }
 
-        if (!$response->successful()) {
-            $this->command->warn('Falha ao buscar produtos da API (HTTP ' . $response->status() . '). Usando factory.');
+        if (! $response->successful()) {
+            $this->command->warn('Falha ao buscar produtos da API (HTTP '.$response->status().'). Usando factory.');
             $this->runWithFactory();
+
             return;
         }
 
@@ -41,10 +44,11 @@ class ProductSeeder extends Seeder
         if (empty($apiProducts)) {
             $this->command->warn('API retornou lista vazia. Usando factory.');
             $this->runWithFactory();
+
             return;
         }
 
-        $this->command->info('Importando ' . count($apiProducts) . ' produtos reais...');
+        $this->command->info('Importando '.count($apiProducts).' produtos reais...');
 
         foreach ($apiProducts as $index => $data) {
             $category = $this->findOrCreateCategory($data['category']);
@@ -53,13 +57,13 @@ class ProductSeeder extends Seeder
             $product = Product::updateOrCreate(
                 ['name' => $data['title']],
                 [
-                    'slug'        => $this->uniqueProductSlug($data['title']),
+                    'slug' => $this->uniqueProductSlug($data['title']),
                     'description' => $data['description'],
-                    'price'       => $data['price'],
-                    'cost_price'  => round($data['price'] * 0.6, 2), // 40% de margem
-                    'quantity'    => $data['stock'] ?? rand(5, 100),
+                    'price' => $data['price'],
+                    'cost_price' => round($data['price'] * 0.6, 2), // 40% de margem
+                    'quantity' => $data['stock'] ?? rand(5, 100),
                     'category_id' => $category->id,
-                    'active'      => true,
+                    'active' => true,
                 ]
             );
 
@@ -71,7 +75,7 @@ class ProductSeeder extends Seeder
 
             // Baixar imagem apenas se o produto ainda não tiver uma
             $imageUrl = $data['images'][0] ?? null;
-            if ($imageUrl && !$product->image_path) {
+            if ($imageUrl && ! $product->image_path) {
                 $this->downloadAndSaveImage($product, $imageUrl);
             }
 
@@ -111,26 +115,26 @@ class ProductSeeder extends Seeder
 
         // Mapear categorias da API para nomes legíveis em português
         $map = [
-            'smartphones'           => 'Smartphones',
-            'laptops'               => 'Notebooks',
-            'fragrances'            => 'Perfumes',
-            'skincare'              => 'Cuidados com a Pele',
-            'groceries'             => 'Alimentos',
-            'home-decoration'       => 'Decoração',
-            'furniture'             => 'Móveis',
-            'tops'                  => 'Camisetas',
-            'womens-dresses'        => 'Vestidos',
-            'womens-shoes'          => 'Calçados Femininos',
-            'mens-shirts'           => 'Camisas Masculinas',
-            'mens-shoes'            => 'Calçados Masculinos',
-            'mens-watches'          => 'Relógios Masculinos',
-            'womens-watches'        => 'Relógios Femininos',
-            'womens-bags'           => 'Bolsas',
-            'womens-jewellery'      => 'Joias',
-            'sunglasses'            => 'Óculos de Sol',
-            'automotive'            => 'Automotivo',
-            'motorcycle'            => 'Motos',
-            'lighting'              => 'Iluminação',
+            'smartphones' => 'Smartphones',
+            'laptops' => 'Notebooks',
+            'fragrances' => 'Perfumes',
+            'skincare' => 'Cuidados com a Pele',
+            'groceries' => 'Alimentos',
+            'home-decoration' => 'Decoração',
+            'furniture' => 'Móveis',
+            'tops' => 'Camisetas',
+            'womens-dresses' => 'Vestidos',
+            'womens-shoes' => 'Calçados Femininos',
+            'mens-shirts' => 'Camisas Masculinas',
+            'mens-shoes' => 'Calçados Masculinos',
+            'mens-watches' => 'Relógios Masculinos',
+            'womens-watches' => 'Relógios Femininos',
+            'womens-bags' => 'Bolsas',
+            'womens-jewellery' => 'Joias',
+            'sunglasses' => 'Óculos de Sol',
+            'automotive' => 'Automotivo',
+            'motorcycle' => 'Motos',
+            'lighting' => 'Iluminação',
         ];
 
         $name = $map[$apiCategory] ?? Str::title(str_replace('-', ' ', $apiCategory));
@@ -138,9 +142,9 @@ class ProductSeeder extends Seeder
         $category = Category::firstOrCreate(
             ['name' => $name],
             [
-                'slug'        => Str::slug($name),
+                'slug' => Str::slug($name),
                 'description' => "Categoria: {$name}",
-                'active'      => true,
+                'active' => true,
             ]
         );
 
@@ -154,17 +158,17 @@ class ProductSeeder extends Seeder
         try {
             $response = Http::timeout(15)->get($url);
 
-            if (!$response->successful()) {
+            if (! $response->successful()) {
                 return;
             }
 
             $ext = strtolower(pathinfo(parse_url($url, PHP_URL_PATH) ?: '', PATHINFO_EXTENSION));
 
-            if (!in_array($ext, self::ALLOWED_IMAGE_EXTENSIONS, true)) {
+            if (! in_array($ext, self::ALLOWED_IMAGE_EXTENSIONS, true)) {
                 $ext = 'jpg';
             }
 
-            $fileName = Str::uuid() . '.' . $ext;
+            $fileName = Str::uuid().'.'.$ext;
             Storage::disk('public')->put("products/{$fileName}", $response->body());
             $product->update(['image_path' => $fileName]);
         } catch (\Exception $e) {
