@@ -93,7 +93,7 @@
                   {{ item.product?.name || 'Produto' }}
                 </p>
                 <p class="text-gray-600 text-sm mt-1">{{ item.product?.description }}</p>
-                <div class="flex justify-between mt-3">
+                <div class="flex flex-wrap justify-between gap-2 mt-3">
                   <span class="text-gray-600"
                     >Qtd: <span class="font-semibold">{{ item.quantity }}</span></span
                   >

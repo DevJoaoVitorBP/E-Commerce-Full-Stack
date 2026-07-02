@@ -117,13 +117,15 @@
             </router-link>
           </div>
 
-          <h1 class="text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+          <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
             {{ product.name }}
           </h1>
 
           <!-- Preço -->
           <div class="mb-6">
-            <p class="text-5xl font-extrabold text-blue-600">R$ {{ formatPrice(product.price) }}</p>
+            <p class="text-3xl md:text-5xl font-extrabold text-blue-600">
+              R$ {{ formatPrice(product.price) }}
+            </p>
           </div>
 
           <!-- Status do Estoque -->

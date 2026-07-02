@@ -11,8 +11,131 @@
     </div>
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Botão de filtros (mobile/tablet) -->
+      <div class="lg:hidden mb-4">
+        <button
+          @click="mobileFiltersOpen = !mobileFiltersOpen"
+          class="flex items-center gap-2 px-4 py-2.5 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-700 shadow-sm hover:bg-gray-50 transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 010 2H4a1 1 0 01-1-1zm3 6a1 1 0 011-1h10a1 1 0 010 2H7a1 1 0 01-1-1zm4 6a1 1 0 011-1h2a1 1 0 010 2h-2a1 1 0 01-1-1z"
+            />
+          </svg>
+          Filtros
+          <span
+            v-if="activeFiltersCount > 0"
+            class="bg-blue-600 text-white text-xs rounded-full px-1.5 py-0.5"
+            >{{ activeFiltersCount }}</span
+          >
+          <svg
+            :class="mobileFiltersOpen ? 'rotate-180' : ''"
+            class="w-4 h-4 ml-auto transition-transform"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            />
+          </svg>
+        </button>
+
+        <!-- Painel de filtros mobile -->
+        <div
+          v-if="mobileFiltersOpen"
+          class="mt-3 bg-white rounded-2xl shadow-sm border border-gray-100 p-6"
+        >
+          <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-gray-900">Filtros</h2>
+            <button @click="clearFilters" class="text-xs text-blue-600 hover:underline">
+              Limpar
+            </button>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                >Buscar</label
+              >
+              <div class="relative">
+                <svg
+                  class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                <input
+                  v-model="filters.search"
+                  type="text"
+                  placeholder="Nome do produto..."
+                  class="w-full pl-9 pr-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                >Categoria</label
+              >
+              <select
+                v-model="filters.category_id"
+                class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+              >
+                <option value="">Todas as categorias</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                >Preço mínimo</label
+              >
+              <input
+                v-model.number="filters.min_price"
+                type="number"
+                placeholder="Mín"
+                class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
+                >Preço máximo</label
+              >
+              <input
+                v-model.number="filters.max_price"
+                type="number"
+                placeholder="Máx"
+                class="w-full px-3 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <button
+            @click="
+              applyFilters();
+              mobileFiltersOpen = false;
+            "
+            class="w-full mt-4 py-2.5 bg-blue-600 text-white font-semibold rounded-xl hover:bg-blue-700 transition text-sm"
+          >
+            Aplicar Filtros
+          </button>
+        </div>
+      </div>
+
       <div class="flex gap-8">
-        <!-- Filtros (Sidebar) -->
+        <!-- Filtros (Sidebar desktop) -->
         <aside class="hidden lg:block w-64 flex-shrink-0">
           <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 sticky top-6">
             <div class="flex items-center justify-between mb-6">
@@ -259,10 +382,12 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, computed, onMounted } from 'vue';
+import { reactive, ref, computed, onMounted } from 'vue';
 import { useProductsStore } from '@/stores/productsStore';
 
 const productsStore = useProductsStore();
+
+const mobileFiltersOpen = ref(false);
 
 const filters = reactive({
   search: '',
@@ -274,6 +399,15 @@ const filters = reactive({
 });
 
 const categories = computed(() => productsStore.categories);
+
+const activeFiltersCount = computed(() => {
+  let count = 0;
+  if (filters.search) count++;
+  if (filters.category_id) count++;
+  if (filters.min_price !== undefined) count++;
+  if (filters.max_price !== undefined) count++;
+  return count;
+});
 
 const applyFilters = async () => {
   filters.page = 1;

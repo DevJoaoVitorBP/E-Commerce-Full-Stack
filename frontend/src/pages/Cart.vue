@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50 py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <h1 class="text-4xl font-bold mb-12">Carrinho de Compras</h1>
+      <h1 class="text-2xl md:text-4xl font-bold mb-8 md:mb-12">Carrinho de Compras</h1>
 
       <!-- Estado de Carregamento -->
       <div v-if="cartStore.isLoading" class="flex justify-center py-16">
@@ -45,7 +45,7 @@
               :key="item.id"
               class="border-b last:border-b-0 p-6 hover:bg-gray-50 transition"
             >
-              <div class="flex gap-6">
+              <div class="flex flex-col sm:flex-row gap-4 sm:gap-6">
                 <!-- Imagem do produto -->
                 <div
                   class="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden"
@@ -92,7 +92,9 @@
                 </div>
 
                 <!-- Quantidade e Ações -->
-                <div class="flex flex-col items-end justify-between">
+                <div
+                  class="flex sm:flex-col items-center sm:items-end justify-between sm:justify-between"
+                >
                   <button
                     @click="removeItem(item.id)"
                     class="text-red-600 hover:text-red-800 font-semibold transition"
