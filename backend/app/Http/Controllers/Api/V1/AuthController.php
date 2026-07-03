@@ -48,7 +48,7 @@ class AuthController extends Controller
                 'email' => 'required|email',
                 'password' => 'required|string',
             ]);
-            
+
             $user = User::firstWhere('email', $validated['email']);
 
             if (! $user || ! Hash::check($validated['password'], $user->password)) {
@@ -89,7 +89,7 @@ class AuthController extends Controller
 
             $validated = $request->validate([
                 'name' => 'sometimes|required|string|max:255',
-                'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+                'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
                 'current_password' => 'required_with:password|string',
                 'password' => 'sometimes|required|string|min:8|confirmed',
             ]);
