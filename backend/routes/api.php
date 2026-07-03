@@ -26,6 +26,7 @@ Route::prefix('v1')->middleware('rate_limit')->group(function () {
         // Rotas de autenticação
         Route::post('/auth/logout', [AuthController::class, 'logout']);
         Route::get('/auth/me', [AuthController::class, 'me']);
+        Route::put('/auth/profile', [AuthController::class, 'updateProfile']);
 
         // Produtos (apenas admin)
         Route::middleware('admin')->group(function () {

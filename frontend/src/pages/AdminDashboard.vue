@@ -166,84 +166,55 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
-import { useProductsStore } from '@/stores/productsStore';
-import { useOrdersStore } from '@/stores/ordersStore';
+import { ref, computed } from 'vue';
+import { useProductsQuery } from '@/composables/useProductsQuery';
+import { useCategoriesQuery } from '@/composables/useCategoriesQuery';
+import { useOrdersQuery } from '@/composables/useOrdersQuery';
 import { useLowStockProducts } from '@/composables/useLowStockProducts';
 import LowStockAlert from '@/components/common/LowStockAlert.vue';
 
-const productsStore = useProductsStore();
-const ordersStore = useOrdersStore();
+const currentLowStockPage = ref(1);
+const lowStockPerPage = ref(10);
+
+const { pagination: productsPagination, isLoading: productsLoading } = useProductsQuery();
+const { categories, isLoading: categoriesLoading } = useCategoriesQuery();
+const { orders, isLoading: ordersLoading } = useOrdersQuery();
 const {
   products: lowStockProductsData,
   isLoading: lowStockLoading,
-  fetchLowStockProducts,
   pagination: lowStockPagination,
   isStockCritical,
   isStockLow,
-} = useLowStockProducts();
+} = useLowStockProducts(currentLowStockPage, lowStockPerPage);
 
-const isLoading = ref(true);
-const isLoadingDetails = ref(false);
-const currentLowStockPage = ref(1);
+const isLoading = computed(
+  () => productsLoading.value || categoriesLoading.value || ordersLoading.value
+);
 
-const stats = ref({
-  totalProducts: 0,
-  totalCategories: 0,
-  totalOrders: 0,
-  totalRevenue: 0,
-});
+const stats = computed(() => ({
+  totalProducts: productsPagination.value.total,
+  totalCategories: categories.value.length,
+  totalOrders: orders.value.length,
+  totalRevenue: orders.value.reduce((sum, order) => sum + (order.total ?? 0), 0),
+}));
 
 const lowStockProducts = computed(() => lowStockProductsData.value);
 
-const countCritical = computed(() => {
-  return lowStockProductsData.value.filter(isStockCritical).length;
-});
+const countCritical = computed(() => lowStockProductsData.value.filter(isStockCritical).length);
 
-const countLow = computed(() => {
-  return lowStockProductsData.value.filter(isStockLow).length;
-});
+const countLow = computed(() => lowStockProductsData.value.filter(isStockLow).length);
 
-const formatPrice = (price: number) => {
-  return price.toFixed(2).replace('.', ',');
-};
+const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
 
 const handlePreviousPage = () => {
   if (currentLowStockPage.value > 1) {
     currentLowStockPage.value--;
-    fetchLowStockProducts(currentLowStockPage.value, 10);
   }
 };
 
 const handleNextPage = () => {
   if (currentLowStockPage.value < lowStockPagination.value.last_page) {
     currentLowStockPage.value++;
-    fetchLowStockProducts(currentLowStockPage.value, 10);
   }
 };
-
-onMounted(async () => {
-  try {
-    await Promise.all([
-      productsStore.fetchProducts(),
-      productsStore.fetchCategories(),
-      ordersStore.fetchOrders(),
-      fetchLowStockProducts(1, 10),
-    ]);
-
-    stats.value.totalProducts = productsStore.pagination.total;
-    stats.value.totalCategories = productsStore.categories.length;
-    stats.value.totalOrders = ordersStore.orders.length;
-    stats.value.totalRevenue = ordersStore.orders.reduce((sum, order) => sum + order.total, 0);
-
-    isLoading.value = false;
-
-    isLoadingDetails.value = true;
-  } catch (error) {
-    console.error('Erro ao carregar dados do dashboard:', error);
-    isLoading.value = false;
-  } finally {
-    isLoadingDetails.value = false;
-  }
-});
 </script>

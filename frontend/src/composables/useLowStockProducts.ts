@@ -1,4 +1,5 @@
-import { ref, computed } from 'vue';
+import { computed, ref, type Ref } from 'vue';
+import { useQuery } from '@tanstack/vue-query';
 import api from '@/services/api';
 
 export interface Product {
@@ -18,72 +19,54 @@ export interface LowStockResponse {
   last_page: number;
 }
 
-export function useLowStockProducts() {
-  const products = ref<Product[]>([]);
-  const isLoading = ref(false);
-  const error = ref<string | null>(null);
-  const pagination = ref({
-    current_page: 1,
-    total: 0,
-    per_page: 10,
-    last_page: 1,
+export function useLowStockProducts(page: Ref<number> = ref(1), perPage: Ref<number> = ref(10)) {
+  const {
+    data,
+    isLoading,
+    error: queryError,
+    refetch,
+  } = useQuery({
+    queryKey: computed(() => ['products', 'low-stock', page.value, perPage.value]),
+    queryFn: () =>
+      api
+        .get<LowStockResponse>('/products/low-stock', {
+          params: { page: page.value, per_page: perPage.value },
+        })
+        .then((r) => r.data),
+    staleTime: 2 * 60 * 1000,
   });
 
-  const fetchLowStockProducts = async (page = 1, perPage = 10) => {
-    isLoading.value = true;
-    error.value = null;
+  const products = computed(() => data.value?.data ?? []);
+  const pagination = computed(() => ({
+    current_page: data.value?.current_page ?? 1,
+    total: data.value?.total ?? 0,
+    per_page: data.value?.per_page ?? 10,
+    last_page: data.value?.last_page ?? 1,
+  }));
 
-    try {
-      const response = await api.get<LowStockResponse>('/products/low-stock', {
-        params: {
-          page,
-          per_page: perPage,
-        },
-      });
-
-      products.value = response.data.data;
-      pagination.value = {
-        current_page: response.data.current_page,
-        total: response.data.total,
-        per_page: response.data.per_page,
-        last_page: response.data.last_page,
-      };
-    } catch (err) {
-      error.value =
-        err instanceof Error ? err.message : 'Erro ao buscar produtos com estoque baixo';
-      console.error('Erro ao buscar produtos com estoque baixo:', err);
-    } finally {
-      isLoading.value = false;
-    }
-  };
+  const error = computed(() =>
+    queryError.value instanceof Error ? queryError.value.message : null
+  );
 
   const stockPercentage = (product: Product): number => {
     if (product.min_quantity === 0) return 0;
     return Math.round((product.quantity / product.min_quantity) * 100);
   };
 
-  const isStockCritical = (product: Product): boolean => {
-    return product.quantity <= 0;
-  };
+  const isStockCritical = (product: Product): boolean => product.quantity <= 0;
 
-  const isStockLow = (product: Product): boolean => {
-    return product.quantity > 0 && product.quantity <= product.min_quantity;
-  };
+  const isStockLow = (product: Product): boolean =>
+    product.quantity > 0 && product.quantity <= product.min_quantity;
 
-  const countCritical = computed(() => {
-    return products.value.filter(isStockCritical).length;
-  });
-
-  const countLow = computed(() => {
-    return products.value.filter(isStockLow).length;
-  });
+  const countCritical = computed(() => products.value.filter(isStockCritical).length);
+  const countLow = computed(() => products.value.filter(isStockLow).length);
 
   return {
     products,
     isLoading,
     error,
     pagination,
-    fetchLowStockProducts,
+    fetchLowStockProducts: refetch,
     stockPercentage,
     isStockCritical,
     isStockLow,

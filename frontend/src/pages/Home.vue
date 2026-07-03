@@ -53,7 +53,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p class="text-2xl font-bold text-blue-400">{{ productsStore.products.length }}+</p>
+            <p class="text-2xl font-bold text-blue-400">{{ products.length }}+</p>
             <p class="text-gray-400 text-sm">Produtos</p>
           </div>
           <div>
@@ -94,10 +94,7 @@
           </router-link>
         </div>
 
-        <div
-          v-if="productsStore.isLoading"
-          class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
-        >
+        <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <div
             v-for="i in 8"
             :key="i"
@@ -229,18 +226,14 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
-import { useProductsStore } from '@/stores/productsStore';
+import { computed } from 'vue';
+import { useProductsQuery } from '@/composables/useProductsQuery';
 import { useAuthStore } from '@/stores/authStore';
 
-const productsStore = useProductsStore();
+const { products: allProducts, isLoading } = useProductsQuery({ per_page: 8 });
 const authStore = useAuthStore();
 
-const products = computed(() => productsStore.products.slice(0, 8));
-
-onMounted(async () => {
-  await productsStore.fetchProducts({ per_page: 8 });
-});
+const products = computed(() => allProducts.value.slice(0, 8));
 
 const formatPrice = (price: number) => {
   return price.toFixed(2).replace('.', ',');

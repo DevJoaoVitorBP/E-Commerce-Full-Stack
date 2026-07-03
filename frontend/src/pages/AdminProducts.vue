@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-2xl md:text-4xl font-bold text-gray-900">Gerenciar Produtos</h1>
-          <p class="text-gray-600 mt-1">Total: {{ productsStore.pagination.total }} produtos</p>
+          <p class="text-gray-600 mt-1">Total: {{ pagination.total }} produtos</p>
         </div>
         <div class="flex gap-3">
           <button
@@ -43,7 +43,7 @@
       </div>
 
       <!-- Estado de Carregamento -->
-      <div v-if="productsStore.isLoading" class="flex justify-center py-12">
+      <div v-if="isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
@@ -70,11 +70,7 @@
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-200">
-              <tr
-                v-for="product in productsStore.products"
-                :key="product.id"
-                class="hover:bg-gray-50"
-              >
+              <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <p class="font-semibold text-gray-900">{{ product.name }}</p>
                 </td>
@@ -126,7 +122,7 @@
               </tr>
 
               <!-- Estado Vazio -->
-              <tr v-if="productsStore.products.length === 0">
+              <tr v-if="products.length === 0">
                 <td colspan="6" class="px-6 py-12 text-center text-gray-500">
                   Nenhum produto encontrado.
                 </td>
@@ -144,7 +140,7 @@
             –
             <span class="font-semibold">{{ rangeEnd }}</span>
             de
-            <span class="font-semibold">{{ productsStore.pagination.total }}</span>
+            <span class="font-semibold">{{ pagination.total }}</span>
             produtos
           </div>
 
@@ -152,7 +148,7 @@
             <!-- Primeira página -->
             <button
               @click="goToPage(1)"
-              :disabled="!productsStore.hasPrevPage"
+              :disabled="!hasPrevPage"
               class="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
               title="Primeira página"
             >
@@ -162,7 +158,7 @@
             <!-- Página anterior -->
             <button
               @click="goToPage(currentPage - 1)"
-              :disabled="!productsStore.hasPrevPage"
+              :disabled="!hasPrevPage"
               class="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               ← Anterior
@@ -188,7 +184,7 @@
             <!-- Próxima página -->
             <button
               @click="goToPage(currentPage + 1)"
-              :disabled="!productsStore.hasNextPage"
+              :disabled="!hasNextPage"
               class="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
             >
               Próxima →
@@ -196,8 +192,8 @@
 
             <!-- Última página -->
             <button
-              @click="goToPage(productsStore.pagination.last_page)"
-              :disabled="!productsStore.hasNextPage"
+              @click="goToPage(pagination.last_page)"
+              :disabled="!hasNextPage"
               class="px-3 py-1.5 rounded text-sm font-medium border border-gray-300 bg-white hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed transition"
               title="Última página"
             >
@@ -235,7 +231,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import { useProductsQuery, useInvalidateProducts } from '@/composables/useProductsQuery';
 import { useProductsStore } from '@/stores/productsStore';
 import { useNotification } from '@/composables/useNotification';
 import EditProductModal from '@/components/modals/EditProductModal.vue';
@@ -243,8 +240,8 @@ import AddProductModal from '@/components/modals/AddProductModal.vue';
 import type { Product } from '@/types';
 
 const { success: showSuccess, error: showError } = useNotification();
-
 const productsStore = useProductsStore();
+const invalidateProducts = useInvalidateProducts();
 
 const searchQuery = ref('');
 const isEditOpen = ref(false);
@@ -253,6 +250,15 @@ const selectedProduct = ref<Product | null>(null);
 const currentPage = ref(1);
 const perPage = ref(15);
 
+const queryFilters = computed(() => ({
+  page: currentPage.value,
+  per_page: perPage.value,
+  search: searchQuery.value || undefined,
+}));
+
+const { products, pagination, isLoading, hasNextPage, hasPrevPage } =
+  useProductsQuery(queryFilters);
+
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
 const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
@@ -260,52 +266,42 @@ const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
 // ─── Paginação ───────────────────────────────────────────────────────────────
 
 const rangeStart = computed(() => {
-  const { current_page, per_page, total } = productsStore.pagination;
+  const { current_page, per_page, total } = pagination.value;
   if (total === 0) return 0;
   return (current_page - 1) * per_page + 1;
 });
 
 const rangeEnd = computed(() => {
-  const { current_page, per_page, total } = productsStore.pagination;
+  const { current_page, per_page, total } = pagination.value;
   return Math.min(current_page * per_page, total);
 });
 
-/** Exibe no máximo 5 páginas centradas na página atual */
 const visiblePages = computed(() => {
-  const total = productsStore.pagination.last_page;
+  const total = pagination.value.last_page;
   const current = currentPage.value;
   const delta = 2;
-
   const start = Math.max(1, current - delta);
   const end = Math.min(total, current + delta);
-
   return Array.from({ length: end - start + 1 }, (_, i) => start + i);
 });
 
 // ─── Ações ───────────────────────────────────────────────────────────────────
 
-const loadProducts = async () => {
-  await productsStore.fetchProducts({
-    page: currentPage.value,
-    per_page: perPage.value,
-    search: searchQuery.value || undefined,
-  });
+const loadProducts = () => {
+  invalidateProducts();
 };
 
-const goToPage = async (page: number) => {
-  if (page < 1 || page > productsStore.pagination.last_page) return;
+const goToPage = (page: number) => {
+  if (page < 1 || page > pagination.value.last_page) return;
   currentPage.value = page;
-  await loadProducts();
 };
 
-const handleSearch = async () => {
-  currentPage.value = 1; // volta pra primeira página ao buscar
-  await loadProducts();
-};
-
-const handlePerPageChange = async () => {
+const handleSearch = () => {
   currentPage.value = 1;
-  await loadProducts();
+};
+
+const handlePerPageChange = () => {
+  currentPage.value = 1;
 };
 
 const openEditModal = (product: Product) => {
@@ -326,16 +322,12 @@ const deleteProduct = async (productId: number) => {
   try {
     await productsStore.deleteProduct(productId);
     showSuccess('Produto deletado com sucesso!');
-    // Se deletou o último item da página, volta uma página
-    if (productsStore.products.length === 0 && currentPage.value > 1) {
+    invalidateProducts();
+    if (products.value.length === 0 && currentPage.value > 1) {
       currentPage.value--;
     }
   } catch {
     showError(`Erro ao deletar: ${productsStore.error}`);
   }
 };
-
-// ─── Init ────────────────────────────────────────────────────────────────────
-
-onMounted(() => loadProducts());
 </script>

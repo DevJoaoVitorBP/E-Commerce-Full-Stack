@@ -12,23 +12,12 @@
       </div>
 
       <!-- Estado de Carregamento -->
-      <div v-if="ordersStore.isLoading" class="flex justify-center py-16">
+      <div v-if="isLoading" class="flex justify-center py-16">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
-      <!-- Estado de Erro -->
-      <div
-        v-else-if="ordersStore.error"
-        class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8"
-      >
-        <p class="text-red-600">{{ ordersStore.error }}</p>
-      </div>
-
       <!-- Estado Vazio -->
-      <div
-        v-else-if="ordersStore.orders.length === 0"
-        class="text-center py-16 bg-white rounded-lg shadow"
-      >
+      <div v-else-if="orders.length === 0" class="text-center py-16 bg-white rounded-lg shadow">
         <svg
           class="w-24 h-24 mx-auto text-gray-400 mb-4"
           fill="none"
@@ -54,7 +43,7 @@
       <!-- Tabela de Pedidos -->
       <div v-else class="space-y-4">
         <div
-          v-for="order in ordersStore.orders"
+          v-for="order in orders"
           :key="order.id"
           class="bg-white rounded-lg shadow hover:shadow-lg transition"
         >
@@ -106,10 +95,9 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue';
-import { useOrdersStore } from '@/stores/ordersStore';
+import { useOrdersQuery } from '@/composables/useOrdersQuery';
 
-const ordersStore = useOrdersStore();
+const { orders, isLoading } = useOrdersQuery();
 
 const formatDate = (date: string | Date) => {
   const d = new Date(date);
@@ -144,13 +132,4 @@ const getStatusClass = (status: string): string => {
   };
   return statusClasses[status] || 'bg-gray-100 text-gray-800';
 };
-
-onMounted(() => {
-  ordersStore.fetchOrders().then(() => {
-    console.log('Orders loaded:', ordersStore.orders);
-    ordersStore.orders.forEach((order) => {
-      console.log(`Order #${order.id} - Total: ${order.total}, Subtotal: ${order.subtotal}`);
-    });
-  });
-});
 </script>

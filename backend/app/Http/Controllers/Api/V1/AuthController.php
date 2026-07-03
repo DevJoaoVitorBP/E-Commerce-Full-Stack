@@ -49,7 +49,7 @@ class AuthController extends Controller
                 'password' => 'required|string',
             ]);
 
-            $user = User::where('email', $validated['email'])->first();
+            $user = User::firstWhere('email', $validated['email']);
 
             if (! $user || ! Hash::check($validated['password'], $user->password)) {
                 return $this->errorResponse('Credenciais inválidas', null, 401);
@@ -80,5 +80,37 @@ class AuthController extends Controller
     public function me(Request $request): JsonResponse
     {
         return $this->successResponse($request->user(), 'Usuário obtido com sucesso');
+    }
+
+    public function updateProfile(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+
+            $validated = $request->validate([
+                'name' => 'sometimes|required|string|max:255',
+                'email' => 'sometimes|required|email|unique:users,email,'.$user->id,
+                'current_password' => 'required_with:password|string',
+                'password' => 'sometimes|required|string|min:8|confirmed',
+            ]);
+
+            if (isset($validated['current_password'])) {
+                if (! Hash::check($validated['current_password'], $user->password)) {
+                    return $this->errorResponse('Senha atual incorreta', null, 422);
+                }
+            }
+
+            $updateData = array_filter([
+                'name' => $validated['name'] ?? null,
+                'email' => $validated['email'] ?? null,
+                'password' => isset($validated['password']) ? Hash::make($validated['password']) : null,
+            ]);
+
+            $user->update($updateData);
+
+            return $this->successResponse($user->fresh(), 'Perfil atualizado com sucesso');
+        } catch (ValidationException $e) {
+            return $this->validationErrorResponse($e->errors());
+        }
     }
 }

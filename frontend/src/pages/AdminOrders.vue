@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-2xl md:text-4xl font-bold text-gray-900">Gerenciar Pedidos</h1>
-          <p class="text-gray-600 mt-1">Total: {{ ordersStore.orders.length }} pedidos</p>
+          <p class="text-gray-600 mt-1">Total: {{ orders.length }} pedidos</p>
         </div>
         <router-link
           to="/admin"
@@ -39,7 +39,7 @@
       </div>
 
       <!-- Estado de Carregamento -->
-      <div v-if="ordersStore.isLoading" class="flex justify-center py-12">
+      <div v-if="isLoading" class="flex justify-center py-12">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
       </div>
 
@@ -111,14 +111,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed } from 'vue';
+import { useOrdersQuery, useInvalidateOrders } from '@/composables/useOrdersQuery';
 import { useOrdersStore } from '@/stores/ordersStore';
 import { useNotification } from '@/composables/useNotification';
 
 const { success: showSuccess, error: showError } = useNotification();
-
 const ordersStore = useOrdersStore();
+const invalidateOrders = useInvalidateOrders();
+
 const filterStatus = ref('');
+const { orders, isLoading } = useOrdersQuery();
 
 const formatDate = (date: string | Date) => {
   const d = new Date(date);
@@ -152,24 +155,21 @@ const getStatusClass = (status: string): string => {
 };
 
 const filteredOrders = computed(() => {
-  if (!filterStatus.value) return ordersStore.orders;
-  return ordersStore.orders.filter((order) => order.status === filterStatus.value);
+  if (!filterStatus.value) return orders.value;
+  return orders.value.filter((order) => order.status === filterStatus.value);
 });
 
-const loadOrders = async () => {
-  await ordersStore.fetchOrders();
+const loadOrders = () => {
+  invalidateOrders();
 };
 
 const updateOrderStatus = async (orderId: number, newStatus: string) => {
   try {
     await ordersStore.updateOrderStatus(orderId, newStatus);
     showSuccess(`Pedido #${orderId} atualizado para ${translateStatus(newStatus)}`);
+    invalidateOrders();
   } catch {
     showError(`Erro ao atualizar: ${ordersStore.error}`);
   }
 };
-
-onMounted(() => {
-  loadOrders();
-});
 </script>

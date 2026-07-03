@@ -1,9 +1,10 @@
 <script setup lang="ts">
 /// <reference lib="dom" />
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ref, reactive, watch } from 'vue';
+import { ref, reactive } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { useCategoriesQuery } from '@/composables/useCategoriesQuery';
 import { useNotification } from '@/composables/useNotification';
 import { createProductSchema } from '@/schemas/product.schema';
 import { getZodErrors } from '@/utils/validation';
@@ -19,19 +20,11 @@ interface Emits {
   (e: 'success'): void;
 }
 
-const props = defineProps<Props>();
+defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-watch(
-  () => props.isOpen,
-  async (isOpen) => {
-    if (isOpen) {
-      await productsStore.fetchCategories();
-    }
-  }
-);
-
 const productsStore = useProductsStore();
+const { categories } = useCategoriesQuery();
 const isLoading = ref(false);
 const errors = reactive<Record<string, string>>({});
 const imageFile = ref<unknown>(null);
@@ -236,7 +229,7 @@ const resetForm = () => {
           class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           <option value="0" disabled>Selecione uma categoria</option>
-          <option v-for="cat in productsStore.categories" :key="cat.id" :value="cat.id">
+          <option v-for="cat in categories" :key="cat.id" :value="cat.id">
             {{ cat.name }}
           </option>
         </select>
