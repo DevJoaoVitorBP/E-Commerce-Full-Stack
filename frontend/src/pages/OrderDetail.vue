@@ -18,16 +18,8 @@
       </router-link>
 
       <!-- Estado de Carregamento -->
-      <div v-if="ordersStore.isLoading" class="flex justify-center py-16">
+      <div v-if="isLoading" class="flex justify-center py-16">
         <div class="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600"></div>
-      </div>
-
-      <!-- Estado de Erro -->
-      <div
-        v-else-if="ordersStore.error"
-        class="bg-red-50 border border-red-200 rounded-lg p-6 mb-8"
-      >
-        <p class="text-red-600">{{ ordersStore.error }}</p>
       </div>
 
       <!-- Detalhes do Pedido -->
@@ -164,14 +156,18 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useOrdersStore } from '@/stores/ordersStore';
+import { useOrderQuery } from '@/composables/useOrderQuery';
 
 const route = useRoute();
-const ordersStore = useOrdersStore();
 
-const order = computed(() => ordersStore.currentOrder);
+const orderId = computed(() => {
+  const id = Number(route.params.id);
+  return isNaN(id) ? null : id;
+});
+
+const { order, isLoading } = useOrderQuery(orderId);
 
 const formatDate = (date: string | Date) => {
   const d = new Date(date);
@@ -184,7 +180,6 @@ const formatPrice = (price: number) => {
 
 const formatZip = (zip: string) => {
   if (!zip) return '';
-  // Formato: 12345-678 (5 dígitos, hífen, 3 dígitos)
   return zip.replace(/^(\d{5})(\d{3})$/, '$1-$2');
 };
 
@@ -209,11 +204,4 @@ const getStatusClass = (status: string): string => {
   };
   return statusClasses[status] || 'bg-gray-100 text-gray-800';
 };
-
-onMounted(async () => {
-  const id = Number(route.params.id);
-  if (id) {
-    await ordersStore.fetchOrderById(id);
-  }
-});
 </script>

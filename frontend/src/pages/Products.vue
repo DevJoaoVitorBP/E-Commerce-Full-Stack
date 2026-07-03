@@ -4,9 +4,7 @@
     <div class="bg-white border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <h1 class="text-3xl font-bold text-gray-900">Produtos</h1>
-        <p class="text-gray-500 mt-1">
-          {{ productsStore.pagination?.total ?? 0 }} produtos encontrados
-        </p>
+        <p class="text-gray-500 mt-1">{{ pagination?.total ?? 0 }} produtos encontrados</p>
       </div>
     </div>
 
@@ -222,10 +220,7 @@
         <!-- Produtos -->
         <main class="flex-1 min-w-0">
           <!-- Esqueleto -->
-          <div
-            v-if="productsStore.isLoading"
-            class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
-          >
+          <div v-if="isLoading" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5">
             <div
               v-for="i in 9"
               :key="i"
@@ -241,11 +236,11 @@
           </div>
 
           <div
-            v-else-if="productsStore.products.length > 0"
+            v-else-if="products.length > 0"
             class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-5"
           >
             <router-link
-              v-for="product in productsStore.products"
+              v-for="product in products"
               :key="product.id"
               :to="`/products/${product.id}`"
               class="group bg-white rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100"
@@ -336,12 +331,9 @@
           </div>
 
           <!-- Paginação -->
-          <div
-            v-if="productsStore.products.length > 0"
-            class="flex items-center justify-center gap-3 mt-10"
-          >
+          <div v-if="products.length > 0" class="flex items-center justify-center gap-3 mt-10">
             <button
-              :disabled="!productsStore.hasPrevPage"
+              :disabled="!hasPrevPage"
               @click="previousPage"
               class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm"
             >
@@ -356,11 +348,11 @@
               Anterior
             </button>
             <span class="px-4 py-2.5 bg-blue-600 text-white rounded-xl text-sm font-semibold">
-              {{ productsStore.pagination?.current_page ?? 1 }} /
-              {{ productsStore.pagination?.last_page ?? 1 }}
+              {{ pagination?.current_page ?? 1 }} /
+              {{ pagination?.last_page ?? 1 }}
             </span>
             <button
-              :disabled="!productsStore.hasNextPage"
+              :disabled="!hasNextPage"
               @click="nextPage"
               class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-gray-200 text-gray-700 rounded-xl hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition text-sm font-medium shadow-sm"
             >
@@ -382,10 +374,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, computed, onMounted } from 'vue';
-import { useProductsStore } from '@/stores/productsStore';
-
-const productsStore = useProductsStore();
+import { reactive, ref, computed } from 'vue';
+import { useProductsQuery } from '@/composables/useProductsQuery';
+import { useCategoriesQuery } from '@/composables/useCategoriesQuery';
 
 const mobileFiltersOpen = ref(false);
 
@@ -398,57 +389,56 @@ const filters = reactive({
   page: 1,
 });
 
-const categories = computed(() => productsStore.categories);
+// applied filters are only updated when user explicitly applies them
+const appliedFilters = reactive({ ...filters });
+
+const { products, pagination, hasNextPage, hasPrevPage, isLoading } = useProductsQuery(
+  computed(() => ({ ...appliedFilters }))
+);
+
+const { categories } = useCategoriesQuery();
 
 const activeFiltersCount = computed(() => {
   let count = 0;
-  if (filters.search) count++;
-  if (filters.category_id) count++;
-  if (filters.min_price !== undefined) count++;
-  if (filters.max_price !== undefined) count++;
+  if (appliedFilters.search) count++;
+  if (appliedFilters.category_id) count++;
+  if (appliedFilters.min_price !== undefined) count++;
+  if (appliedFilters.max_price !== undefined) count++;
   return count;
 });
 
-const applyFilters = async () => {
-  filters.page = 1;
-  if (filters.category_id) {
-    filters.category_id = Number(filters.category_id);
-  }
-  await productsStore.fetchProducts(filters);
+const applyFilters = () => {
+  appliedFilters.page = 1;
+  appliedFilters.search = filters.search;
+  appliedFilters.category_id = filters.category_id ? Number(filters.category_id) : '';
+  appliedFilters.min_price = filters.min_price;
+  appliedFilters.max_price = filters.max_price;
+  appliedFilters.per_page = filters.per_page;
 };
 
-const clearFilters = async () => {
+const clearFilters = () => {
   filters.search = '';
   filters.category_id = '';
   filters.min_price = undefined;
   filters.max_price = undefined;
   filters.page = 1;
-  await productsStore.fetchProducts(filters);
+  Object.assign(appliedFilters, {
+    search: '',
+    category_id: '',
+    min_price: undefined,
+    max_price: undefined,
+    page: 1,
+    per_page: 12,
+  });
 };
 
-const nextPage = async () => {
-  filters.page = productsStore.pagination.current_page + 1;
-  if (filters.category_id) {
-    filters.category_id = Number(filters.category_id);
-  }
-  await productsStore.fetchProducts(filters);
+const nextPage = () => {
+  appliedFilters.page = pagination.value.current_page + 1;
 };
 
-const previousPage = async () => {
-  filters.page = productsStore.pagination.current_page - 1;
-  if (filters.category_id) {
-    filters.category_id = Number(filters.category_id);
-  }
-  await productsStore.fetchProducts(filters);
+const previousPage = () => {
+  appliedFilters.page = pagination.value.current_page - 1;
 };
-
-onMounted(async () => {
-  await productsStore.fetchCategories();
-  if (filters.category_id) {
-    filters.category_id = Number(filters.category_id);
-  }
-  await productsStore.fetchProducts(filters);
-});
 
 const formatPrice = (price: number) => {
   return price.toFixed(2).replace('.', ',');

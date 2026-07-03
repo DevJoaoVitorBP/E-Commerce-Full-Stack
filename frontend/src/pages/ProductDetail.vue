@@ -35,10 +35,7 @@
 
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <!-- Estado de Carregamento -->
-      <div
-        v-if="productsStore.isLoading"
-        class="grid grid-cols-1 md:grid-cols-2 gap-10 animate-pulse"
-      >
+      <div v-if="isLoading" class="grid grid-cols-1 md:grid-cols-2 gap-10 animate-pulse">
         <div class="bg-gray-200 rounded-3xl h-[500px]"></div>
         <div class="space-y-4 pt-4">
           <div class="h-8 bg-gray-200 rounded-xl w-3/4"></div>
@@ -50,10 +47,7 @@
       </div>
 
       <!-- Estado de Erro -->
-      <div
-        v-else-if="productsStore.error"
-        class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center"
-      >
+      <div v-else-if="isError" class="bg-red-50 border border-red-200 rounded-2xl p-8 text-center">
         <svg
           class="w-12 h-12 text-red-400 mx-auto mb-4"
           fill="none"
@@ -67,7 +61,7 @@
             d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        <p class="text-red-600 font-medium">{{ productsStore.error }}</p>
+        <p class="text-red-600 font-medium">Erro ao carregar produto.</p>
       </div>
 
       <!-- Detalhes do Produto -->
@@ -280,21 +274,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue';
+import { ref, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useProductsStore } from '@/stores/productsStore';
+import { useProductQuery } from '@/composables/useProductQuery';
 import { useCartStore } from '@/stores/cartStore';
 import { useNotification } from '@/composables/useNotification';
 
 const route = useRoute();
-const productsStore = useProductsStore();
 const cartStore = useCartStore();
 const { success: showSuccess, error: showError } = useNotification();
 
+const productId = computed(() => {
+  const id = Number(route.params.id);
+  return isNaN(id) ? null : id;
+});
+
+const { product, isLoading, isError } = useProductQuery(productId);
+
 const quantity = ref(1);
 const isAddingToCart = ref(false);
-
-const product = computed(() => productsStore.currentProduct);
 
 const formatPrice = (price: number) => {
   return price.toFixed(2).replace('.', ',');
@@ -308,8 +306,6 @@ const addToCart = async () => {
     await cartStore.addItem(product.value.id, quantity.value);
     showSuccess(`${product.value.name} adicionado ao carrinho! (${quantity.value} un.)`);
     quantity.value = 1;
-    // Vou deixar comentado por enquanto, pois não quero redirecionar para o carrinho imediatamente
-    // await router.push('/cart')
   } catch (error) {
     console.error('Error adding to cart:', error);
     showError('Erro ao adicionar ao carrinho. Tente novamente.');
@@ -317,12 +313,4 @@ const addToCart = async () => {
     isAddingToCart.value = false;
   }
 };
-
-onMounted(async () => {
-  const id = Number(route.params.id);
-  if (id) {
-    productsStore.currentProduct = null;
-    await productsStore.fetchProductById(id);
-  }
-});
 </script>

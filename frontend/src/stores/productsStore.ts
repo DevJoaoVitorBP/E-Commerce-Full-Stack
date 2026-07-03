@@ -206,7 +206,7 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  async function deleteProduct(id: number, forceRefresh: boolean = true) {
+  async function deleteProduct(id: number) {
     isLoading.value = true;
     error.value = null;
     try {

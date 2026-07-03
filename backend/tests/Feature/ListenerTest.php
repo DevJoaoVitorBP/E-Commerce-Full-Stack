@@ -24,6 +24,7 @@ class ListenerTest extends TestCase
     use RefreshDatabase;
 
     /** @test */
+    #[\PHPUnit\Framework\Attributes\Test]
     public function send_order_notification_listener_dispatches_update_stock_job()
     {
         Queue::fake();

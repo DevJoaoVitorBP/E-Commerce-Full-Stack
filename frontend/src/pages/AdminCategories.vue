@@ -5,7 +5,7 @@
       <div class="flex items-center justify-between mb-8">
         <div>
           <h1 class="text-2xl md:text-4xl font-bold text-gray-900">Gerenciar Categorias</h1>
-          <p class="text-gray-600 mt-1">Total: {{ productsStore.categories.length }} categorias</p>
+          <p class="text-gray-600 mt-1">Total: {{ categories.length }} categorias</p>
         </div>
 
         <router-link
@@ -56,11 +56,7 @@
             </thead>
 
             <tbody class="divide-y divide-gray-200">
-              <tr
-                v-for="category in productsStore.categories"
-                :key="category.id"
-                class="hover:bg-gray-50"
-              >
+              <tr v-for="category in categories" :key="category.id" class="hover:bg-gray-50">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <p class="text-gray-600">#{{ category.id }}</p>
                 </td>
@@ -122,8 +118,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue';
-import { useRouter } from 'vue-router';
+import { ref, reactive } from 'vue';
+import { useCategoriesQuery, useInvalidateCategories } from '@/composables/useCategoriesQuery';
+import { useProductsQuery, useInvalidateProducts } from '@/composables/useProductsQuery';
 import { useProductsStore } from '@/stores/productsStore';
 import { useNotification } from '@/composables/useNotification';
 import EditCategoryModal from '@/components/modals/EditCategoryModal.vue';
@@ -131,31 +128,26 @@ import { createCategorySchemaWithValidation } from '@/schemas/category.schema';
 import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
 
-const router = useRouter();
-
 const { success: showSuccess, error: showError } = useNotification();
-
 const productsStore = useProductsStore();
+const invalidateCategories = useInvalidateCategories();
+const invalidateProducts = useInvalidateProducts();
+
+const { categories } = useCategoriesQuery();
+const { products: allProducts } = useProductsQuery({ per_page: 1000 });
 
 const newCategory = ref('');
 const isEditOpen = ref(false);
 const selectedCategory = ref<Category | null>(null);
 const errors = reactive<Record<string, string>>({});
 
-/*
-Para respeitar o teste técnico, estou carregando todas as categorias e produtos de uma vez só.
-Em um cenário real, seria melhor implementar um endpoint específico para contar produtos por categoria, evitando o carregamento desnecessário de todos os produtos.
-Como o teste técnico não especificou um endpoint para contar produtos por categoria, optei por esta abordagem para manter a simplicidade e atender aos requisitos do teste.
-*/
-const loadCategories = async () => {
-  await Promise.all([
-    productsStore.fetchCategories(),
-    productsStore.fetchProducts({ per_page: 1000 }),
-  ]);
+const loadCategories = () => {
+  invalidateCategories();
+  invalidateProducts();
 };
 
 const getProductCount = (categoryId: number) => {
-  return productsStore.products.filter((product) => product.category_id === categoryId).length;
+  return allProducts.value.filter((product) => product.category_id === categoryId).length;
 };
 
 const clearErrors = () => {
@@ -167,7 +159,7 @@ const clearErrors = () => {
 const validateForm = (): boolean => {
   clearErrors();
 
-  const schema = createCategorySchemaWithValidation(productsStore.categories);
+  const schema = createCategorySchemaWithValidation(categories.value);
   const result = schema.safeParse({ name: newCategory.value });
 
   if (!result.success) {
@@ -186,7 +178,7 @@ const addCategory = async () => {
     showSuccess('Categoria criada com sucesso!');
     newCategory.value = '';
     clearErrors();
-    await loadCategories();
+    invalidateCategories();
   } catch {
     showError(`Erro ao criar: ${productsStore.error}`);
   }
@@ -210,12 +202,9 @@ const deleteCategory = async (categoryId: number) => {
   try {
     await productsStore.deleteCategory(categoryId);
     showSuccess('Categoria deletada com sucesso!');
+    invalidateCategories();
   } catch {
     showError(`Erro ao deletar: ${productsStore.error}`);
   }
 };
-
-onMounted(() => {
-  loadCategories();
-});
 </script>

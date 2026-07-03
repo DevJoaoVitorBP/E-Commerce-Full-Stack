@@ -32,11 +32,11 @@ class ProcessOrder implements ShouldQueue
             // 1. Validar informações de pagamento
             $this->validatePaymentInfo();
 
-            // 2. Mockar integração com gateway de pagamento
-            $this->processPaymentWithGateway();
-
-            // 3. Confirmar estoque (já foi feito em UpdateStockAfterOrder, mas validamos aqui)
+            // 2. Confirmar estoque (já foi feito em UpdateStockAfterOrder, mas validamos aqui)
             $this->confirmStockAvailability();
+
+            // 3. Mockar integração com gateway de pagamento
+            $this->processPaymentWithGateway();
 
             // 4. Preparar envio
             $invoiceNumber = $this->generateInvoiceNumber();

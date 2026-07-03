@@ -2,12 +2,13 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { useCategoriesQuery } from '@/composables/useCategoriesQuery';
 import { useNotification } from '@/composables/useNotification';
 import { updateCategorySchemaWithValidation, apiErrorSchema } from '@/schemas/category.schema';
 import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
 
-const { success: showSuccess, error: showError } = useNotification();
+const { success: showSuccess } = useNotification();
 
 interface Props {
   isOpen: boolean;
@@ -23,6 +24,7 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const productsStore = useProductsStore();
+const { categories } = useCategoriesQuery();
 const isLoading = ref(false);
 const errors = reactive<Record<string, string>>({});
 const serverError = ref('');
@@ -52,10 +54,7 @@ const clearErrors = () => {
 const validateForm = (): boolean => {
   clearErrors();
 
-  const schema = updateCategorySchemaWithValidation(
-    productsStore.categories,
-    props.category?.id || 0
-  );
+  const schema = updateCategorySchemaWithValidation(categories.value, props.category?.id || 0);
 
   const result = schema.safeParse({
     name: formData.name,

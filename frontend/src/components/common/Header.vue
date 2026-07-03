@@ -50,7 +50,12 @@
 
         <!-- Menu do usuário -->
         <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
-          <div class="text-sm text-gray-700">{{ authStore.user?.name }}</div>
+          <router-link
+            to="/profile"
+            class="text-sm text-gray-700 hover:text-blue-600 transition font-medium"
+          >
+            {{ authStore.user?.name }}
+          </router-link>
           <button
             @click="handleLogout"
             class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition text-sm"

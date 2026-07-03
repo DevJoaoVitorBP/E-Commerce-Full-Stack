@@ -107,6 +107,27 @@ export const useAuthStore = defineStore('auth', () => {
     }
   }
 
+  async function updateProfile(data: {
+    name?: string;
+    email?: string;
+    current_password?: string;
+    password?: string;
+    password_confirmation?: string;
+  }) {
+    isLoading.value = true;
+    error.value = null;
+    try {
+      const response = await api.put('/auth/profile', data);
+      user.value = response.data.data;
+      return user.value;
+    } catch (err: unknown) {
+      error.value = getErrorMessage(err, 'Erro ao atualizar perfil');
+      throw err;
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
   return {
     user,
     token,
@@ -119,6 +140,7 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     logout,
     fetchUser,
+    updateProfile,
     initializeAuth,
   };
 });
