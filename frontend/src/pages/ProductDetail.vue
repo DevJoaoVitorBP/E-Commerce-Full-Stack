@@ -284,10 +284,12 @@ import { ref, onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
 import { useCartStore } from '@/stores/cartStore';
+import { useNotification } from '@/composables/useNotification';
 
 const route = useRoute();
 const productsStore = useProductsStore();
 const cartStore = useCartStore();
+const { success: showSuccess, error: showError } = useNotification();
 
 const quantity = ref(1);
 const isAddingToCart = ref(false);
@@ -304,11 +306,13 @@ const addToCart = async () => {
   isAddingToCart.value = true;
   try {
     await cartStore.addItem(product.value.id, quantity.value);
+    showSuccess(`${product.value.name} adicionado ao carrinho! (${quantity.value} un.)`);
     quantity.value = 1;
     // Vou deixar comentado por enquanto, pois não quero redirecionar para o carrinho imediatamente
     // await router.push('/cart')
   } catch (error) {
     console.error('Error adding to cart:', error);
+    showError('Erro ao adicionar ao carrinho. Tente novamente.');
   } finally {
     isAddingToCart.value = false;
   }
