@@ -37,18 +37,16 @@ api.interceptors.request.use(
 
 // Interceptor para tratar respostas
 api.interceptors.response.use(
-  (response) => {
-    return response;
-  },
+  (response) => response,
   (error) => {
-    // Se for erro 401, limpar token e redirecionar para login
-    if (error.response?.status === 401) {
+    const isLoginRequest = error.config?.url?.includes('/auth/login');
+
+    if (error.response?.status === 401 && !isLoginRequest) {
       localStorage.removeItem('token');
       window.location.href = '/login';
     }
 
-    // Se for erro 403, redirecionar para home
-    if (error.response?.status === 403) {
+    if (error.response?.status === 403 && !isLoginRequest) {
       window.location.href = '/';
     }
 
