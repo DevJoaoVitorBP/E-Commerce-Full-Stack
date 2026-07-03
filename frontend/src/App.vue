@@ -7,6 +7,8 @@
     </main>
 
     <Footer />
+
+    <Toast />
   </div>
 </template>
 
@@ -15,6 +17,7 @@ import { onMounted } from 'vue';
 import { useAuthStore } from '@/stores/authStore';
 import Header from '@/components/common/Header.vue';
 import Footer from '@/components/common/Footer.vue';
+import Toast from '@/components/common/Toast.vue';
 
 const authStore = useAuthStore();
 
