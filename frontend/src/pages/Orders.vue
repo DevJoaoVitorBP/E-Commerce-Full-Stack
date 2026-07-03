@@ -116,8 +116,11 @@ const formatDate = (date: string | Date) => {
   return d.toLocaleDateString('pt-BR', { year: 'numeric', month: 'long', day: 'numeric' });
 };
 
-const formatPrice = (price: number) => {
-  return price.toFixed(2).replace('.', ',');
+const formatPrice = (price: number | undefined | null) => {
+  if (price === undefined || price === null) {
+    return '0,00';
+  }
+  return parseFloat(String(price)).toFixed(2).replace('.', ',');
 };
 
 const translateStatus = (status: string): string => {
@@ -143,6 +146,11 @@ const getStatusClass = (status: string): string => {
 };
 
 onMounted(() => {
-  ordersStore.fetchOrders();
+  ordersStore.fetchOrders().then(() => {
+    console.log('Orders loaded:', ordersStore.orders);
+    ordersStore.orders.forEach((order) => {
+      console.log(`Order #${order.id} - Total: ${order.total}, Subtotal: ${order.subtotal}`);
+    });
+  });
 });
 </script>
