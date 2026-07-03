@@ -4,9 +4,12 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { useNotification } from '@/composables/useNotification';
 import { updateProductSchema } from '@/schemas/product.schema';
 import { getZodErrors } from '@/utils/validation';
 import type { Product } from '@/types';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 interface Props {
   isOpen: boolean;
@@ -99,12 +102,12 @@ const handleSave = async () => {
     }
 
     await productsStore.updateProduct(props.product.id, formDataToSend);
-    alert('Produto atualizado com sucesso!');
+    showSuccess('Produto atualizado com sucesso!');
     emit('close');
     emit('success');
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
-    alert(`Erro ao atualizar: ${error || productsStore.error}`);
+    showError(`Erro ao atualizar: ${error || productsStore.error}`);
   } finally {
     isLoading.value = false;
   }

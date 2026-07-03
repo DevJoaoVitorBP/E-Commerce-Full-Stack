@@ -237,9 +237,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { useNotification } from '@/composables/useNotification';
 import EditProductModal from '@/components/modals/EditProductModal.vue';
 import AddProductModal from '@/components/modals/AddProductModal.vue';
 import type { Product } from '@/types';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 const productsStore = useProductsStore();
 
@@ -322,14 +325,13 @@ const deleteProduct = async (productId: number) => {
   if (!confirm('Tem certeza que deseja deletar este produto?')) return;
   try {
     await productsStore.deleteProduct(productId);
-    alert('Produto deletado com sucesso!');
+    showSuccess('Produto deletado com sucesso!');
     // Se deletou o último item da página, volta uma página
     if (productsStore.products.length === 0 && currentPage.value > 1) {
       currentPage.value--;
     }
-    await loadProducts();
   } catch {
-    alert(`Erro ao deletar: ${productsStore.error}`);
+    showError(`Erro ao deletar: ${productsStore.error}`);
   }
 };
 

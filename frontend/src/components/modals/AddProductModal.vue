@@ -4,8 +4,11 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
+import { useNotification } from '@/composables/useNotification';
 import { createProductSchema } from '@/schemas/product.schema';
 import { getZodErrors } from '@/utils/validation';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 interface Props {
   isOpen: boolean;
@@ -83,7 +86,7 @@ const handleCreate = async () => {
     formDataToSend.append('cost_price', formData.cost_price.toString());
     formDataToSend.append('quantity', formData.quantity.toString());
     formDataToSend.append('category_id', formData.category_id.toString());
-    formDataToSend.append('active', formData.active.toString());
+    formDataToSend.append('active', formData.active ? '1' : '0');
 
     if (imageFile.value) {
       if (imageFile.value) {
@@ -92,13 +95,13 @@ const handleCreate = async () => {
     }
 
     await productsStore.createProduct(formDataToSend);
-    alert('Produto criado com sucesso!');
+    showSuccess('Produto criado com sucesso!');
     emit('close');
     resetForm();
     emit('success');
   } catch (err) {
     const error = err instanceof Error ? err.message : String(err);
-    alert(`Erro ao criar: ${error || productsStore.error}`);
+    showError(`Erro ao criar: ${error || productsStore.error}`);
   } finally {
     isLoading.value = false;
   }

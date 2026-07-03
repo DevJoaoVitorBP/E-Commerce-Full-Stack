@@ -113,6 +113,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue';
 import { useOrdersStore } from '@/stores/ordersStore';
+import { useNotification } from '@/composables/useNotification';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 const ordersStore = useOrdersStore();
 const filterStatus = ref('');
@@ -160,9 +163,9 @@ const loadOrders = async () => {
 const updateOrderStatus = async (orderId: number, newStatus: string) => {
   try {
     await ordersStore.updateOrderStatus(orderId, newStatus);
-    alert(`Pedido #${orderId} atualizado para ${translateStatus(newStatus)}`);
+    showSuccess(`Pedido #${orderId} atualizado para ${translateStatus(newStatus)}`);
   } catch {
-    alert(`Erro ao atualizar: ${ordersStore.error}`);
+    showError(`Erro ao atualizar: ${ordersStore.error}`);
   }
 };
 

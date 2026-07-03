@@ -88,7 +88,17 @@
 
                     <button
                       @click="deleteCategory(category.id)"
-                      class="px-3 py-1 bg-red-600 text-white rounded hover:bg-red-700 text-sm"
+                      :disabled="getProductCount(category.id) > 0"
+                      :title="
+                        getProductCount(category.id) > 0
+                          ? `Remova os ${getProductCount(category.id)} produtos desta categoria antes de deletar`
+                          : 'Deletar categoria'
+                      "
+                      :class="{
+                        'opacity-50 cursor-not-allowed': getProductCount(category.id) > 0,
+                        'hover:bg-red-700': getProductCount(category.id) === 0,
+                      }"
+                      class="px-3 py-1 bg-red-600 text-white rounded text-sm transition"
                     >
                       Deletar
                     </button>
@@ -113,11 +123,17 @@
 
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue';
+import { useRouter } from 'vue-router';
 import { useProductsStore } from '@/stores/productsStore';
+import { useNotification } from '@/composables/useNotification';
 import EditCategoryModal from '@/components/modals/EditCategoryModal.vue';
-import { createCategorySchema } from '@/schemas/category.schema';
+import { createCategorySchemaWithValidation } from '@/schemas/category.schema';
 import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
+
+const router = useRouter();
+
+const { success: showSuccess, error: showError } = useNotification();
 
 const productsStore = useProductsStore();
 
@@ -151,7 +167,8 @@ const clearErrors = () => {
 const validateForm = (): boolean => {
   clearErrors();
 
-  const result = createCategorySchema.safeParse({ name: newCategory.value });
+  const schema = createCategorySchemaWithValidation(productsStore.categories);
+  const result = schema.safeParse({ name: newCategory.value });
 
   if (!result.success) {
     Object.assign(errors, getZodErrors(result.error));
@@ -166,12 +183,12 @@ const addCategory = async () => {
 
   try {
     await productsStore.createCategory(newCategory.value);
-    alert('Categoria criada com sucesso!');
+    showSuccess('Categoria criada com sucesso!');
     newCategory.value = '';
     clearErrors();
     await loadCategories();
   } catch {
-    alert(`Erro ao criar: ${productsStore.error}`);
+    showError(`Erro ao criar: ${productsStore.error}`);
   }
 };
 
@@ -192,10 +209,9 @@ const deleteCategory = async (categoryId: number) => {
 
   try {
     await productsStore.deleteCategory(categoryId);
-    alert('Categoria deletada com sucesso!');
-    await loadCategories();
+    showSuccess('Categoria deletada com sucesso!');
   } catch {
-    alert(`Erro ao deletar: ${productsStore.error}`);
+    showError(`Erro ao deletar: ${productsStore.error}`);
   }
 };
 

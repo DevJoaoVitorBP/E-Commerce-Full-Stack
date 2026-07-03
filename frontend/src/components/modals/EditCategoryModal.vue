@@ -2,9 +2,12 @@
 import { ref, reactive, watch } from 'vue';
 import BaseModal from './BaseModal.vue';
 import { useProductsStore } from '@/stores/productsStore';
-import { updateCategorySchema } from '@/schemas/category.schema';
+import { useNotification } from '@/composables/useNotification';
+import { updateCategorySchemaWithValidation, apiErrorSchema } from '@/schemas/category.schema';
 import { getZodErrors } from '@/utils/validation';
 import type { Category } from '@/types';
+
+const { success: showSuccess, error: showError } = useNotification();
 
 interface Props {
   isOpen: boolean;
@@ -22,6 +25,7 @@ const emit = defineEmits<Emits>();
 const productsStore = useProductsStore();
 const isLoading = ref(false);
 const errors = reactive<Record<string, string>>({});
+const serverError = ref('');
 
 const formData = reactive({
   name: '',
@@ -33,6 +37,7 @@ watch(
     if (category) {
       formData.name = category.name;
       clearErrors();
+      serverError.value = '';
     }
   },
   { immediate: true }
@@ -47,7 +52,12 @@ const clearErrors = () => {
 const validateForm = (): boolean => {
   clearErrors();
 
-  const result = updateCategorySchema.safeParse({
+  const schema = updateCategorySchemaWithValidation(
+    productsStore.categories,
+    props.category?.id || 0
+  );
+
+  const result = schema.safeParse({
     name: formData.name,
   });
 
@@ -63,13 +73,21 @@ const handleSave = async () => {
   if (!validateForm() || !props.category) return;
 
   isLoading.value = true;
+  serverError.value = '';
   try {
     await productsStore.updateCategory(props.category.id, formData.name);
-    alert('Categoria atualizada com sucesso!');
+    showSuccess('Categoria atualizada com sucesso!');
     emit('close');
     emit('success');
-  } catch {
-    alert(`Erro ao atualizar: ${productsStore.error}`);
+  } catch (err) {
+    const parsed = apiErrorSchema.safeParse(err);
+    if (parsed.success && parsed.data.response.data.errors) {
+      Object.entries(parsed.data.response.data.errors).forEach(([field, messages]) => {
+        errors[field] = messages[0];
+      });
+    } else {
+      serverError.value = productsStore.error ?? 'Erro ao atualizar categoria';
+    }
   } finally {
     isLoading.value = false;
   }
@@ -101,6 +119,13 @@ const closeModal = () => {
         />
         <p v-if="errors.name" class="text-sm text-red-600 mt-1">{{ errors.name }}</p>
       </div>
+
+      <p
+        v-if="serverError"
+        class="text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg px-3 py-2"
+      >
+        {{ serverError }}
+      </p>
     </form>
   </BaseModal>
 </template>

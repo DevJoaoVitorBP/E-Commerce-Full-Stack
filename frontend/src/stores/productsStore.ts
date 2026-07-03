@@ -67,11 +67,11 @@ export const useProductsStore = defineStore('products', () => {
     return Date.now() - cacheEntry.timestamp < CACHE_DURATION;
   }
 
-  async function fetchProducts(filters: ProductFilters = {}) {
+  async function fetchProducts(filters: ProductFilters = {}, forceRefresh: boolean = false) {
     const cacheKey = JSON.stringify(cleanFilters(filters));
     const cached = productsCache.value.get(cacheKey);
 
-    if (isCacheValid(cached)) {
+    if (!forceRefresh && isCacheValid(cached)) {
       products.value = cached.data.products;
       pagination.value = cached.data.pagination;
       return;
@@ -117,8 +117,8 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  async function fetchCategories() {
-    if (isCacheValid(categoriesCache.value)) {
+  async function fetchCategories(forceRefresh: boolean = false) {
+    if (!forceRefresh && isCacheValid(categoriesCache.value)) {
       categories.value = categoriesCache.value.data;
       return;
     }
@@ -206,7 +206,7 @@ export const useProductsStore = defineStore('products', () => {
     }
   }
 
-  async function deleteProduct(id: number) {
+  async function deleteProduct(id: number, forceRefresh: boolean = true) {
     isLoading.value = true;
     error.value = null;
     try {
@@ -215,6 +215,7 @@ export const useProductsStore = defineStore('products', () => {
       if (currentProduct.value?.id === id) {
         currentProduct.value = null;
       }
+      clearCache();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao deletar produto');
       throw err;
@@ -255,6 +256,7 @@ export const useProductsStore = defineStore('products', () => {
     try {
       await api.delete(`/categories/${id}`);
       categories.value = categories.value.filter((c) => c.id !== id);
+      clearCache();
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao deletar categoria');
       throw err;

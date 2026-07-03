@@ -111,6 +111,13 @@ class CategoryController extends Controller
             return $this->notFoundResponse('Categoria n�o encontrada');
         }
 
+        if ($category->products()->count() > 0) {
+            return $this->errorResponse(
+                'Não é possível deletar uma categoria com produtos. Remova ou reatribua os produtos primeiro.',
+                null,
+                400
+            );
+        }
         $deleted = $this->service->deleteCategory($id);
 
         if (! $deleted) {
