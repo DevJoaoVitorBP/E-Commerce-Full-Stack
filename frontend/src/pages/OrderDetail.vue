@@ -60,12 +60,19 @@
               :key="item.id"
               class="flex gap-4 border-b pb-4 last:border-b-0 last:pb-0"
             >
-              <!-- Imagem do Produto -->
+              <!-- Imagem do produto -->
               <div
-                class="flex-shrink-0 w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center"
+                class="flex-shrink-0 w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden"
               >
+                <img
+                  v-if="item.product?.image_url"
+                  :src="item.product.image_url"
+                  :alt="item.product?.name"
+                  class="w-full h-full object-cover"
+                />
                 <svg
-                  class="w-10 h-10 text-gray-400"
+                  v-else
+                  class="w-12 h-12 text-gray-400"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
