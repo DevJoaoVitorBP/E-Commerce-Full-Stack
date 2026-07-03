@@ -109,6 +109,7 @@ export const useOrdersStore = defineStore('orders', () => {
     try {
       const response = await api.post('/orders', data);
       currentOrder.value = response.data.data;
+      clearCache();
       return currentOrder.value;
     } catch (err: unknown) {
       error.value = getErrorMessage(err, 'Erro ao criar pedido');

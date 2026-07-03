@@ -13,7 +13,7 @@ class OrderRepository extends BaseRepository
 
     public function getByUser(int $userId)
     {
-        return $this->model->where('user_id', $userId)->latest()->paginate(15);
+        return $this->model->where('user_id', $userId)->with('items.product')->latest()->paginate(15);
     }
 
     public function getByStatus(string $status)
@@ -28,7 +28,7 @@ class OrderRepository extends BaseRepository
 
     public function getAllOrders()
     {
-        return $this->model->latest()->get();
+        return $this->model->with('items.product')->latest()->get();
     }
 
     public function findWithItems(int $id)
