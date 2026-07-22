@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\DTOs\ProductDTO;
+use App\Http\Requests\FilterProductRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
@@ -23,9 +24,9 @@ class ProductController extends Controller
         $this->service = new ProductService;
     }
 
-    public function index(): JsonResponse
+    public function index(FilterProductRequest $request): JsonResponse
     {
-        $filters = request()->only('category_id', 'search', 'min_price', 'max_price', 'sort', 'sort_direction', 'per_page', 'page');
+        $filters = $request->validated();
         $products = $this->service->getAllProducts($filters);
 
         return $this->paginatedResponse(

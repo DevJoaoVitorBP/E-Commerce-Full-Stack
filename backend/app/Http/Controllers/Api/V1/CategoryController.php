@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\DTOs\CategoryDTO;
+use App\Http\Requests\FilterProductRequest;
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Http\Resources\ProductResource;
@@ -50,15 +51,15 @@ class CategoryController extends Controller
         );
     }
 
-    public function products(int $id): JsonResponse
+    public function products(int $id, FilterProductRequest $request): JsonResponse
     {
         $category = $this->service->getCategoryById($id);
 
         if (! $category) {
-            return $this->notFoundResponse('Categoria n�o encontrada');
+            return $this->notFoundResponse('Categoria não encontrada');
         }
 
-        $filters = request()->only('search', 'min_price', 'max_price', 'sort', 'sort_direction', 'per_page', 'page');
+        $filters = $request->validated();
         $products = $this->productService->getProductsByCategory($id, $filters);
 
         return $this->paginatedResponse(

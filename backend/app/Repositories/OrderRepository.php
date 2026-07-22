@@ -18,6 +18,11 @@ class OrderRepository extends BaseRepository
 
     public function getByStatus(string $status)
     {
+        $validStatuses = ['pending', 'processing', 'shipped', 'delivered', 'cancelled'];
+        if (! in_array($status, $validStatuses)) {
+            return $this->model->where('status', 'pending')->latest()->paginate(15);
+        }
+
         return $this->model->where('status', $status)->latest()->paginate(15);
     }
 

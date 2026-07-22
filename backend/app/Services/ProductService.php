@@ -119,8 +119,12 @@ class ProductService
         return $this->repository->searchByName($query);
     }
 
-    public function getProductsByCategory(int $categoryId)
+    public function getProductsByCategory(int $categoryId, array $filters = [])
     {
+        if (! empty($filters['search']) || ! empty($filters['min_price']) || ! empty($filters['max_price']) || ! empty($filters['sort'])) {
+            return $this->repository->getByCategoryWithFilters($categoryId, $filters);
+        }
+
         $cacheKey = "products.category.{$categoryId}";
 
         return Cache::tags([self::CATEGORY_CACHE_TAG, "category.{$categoryId}"])

@@ -36,6 +36,10 @@ class CategoryRepository extends BaseRepository
 
     public function findBySlug(string $slug)
     {
+        if (! preg_match('/^[a-z0-9_-]+$/i', $slug)) {
+            return null;
+        }
+
         return $this->model->where('slug', $slug)->first();
     }
 }
