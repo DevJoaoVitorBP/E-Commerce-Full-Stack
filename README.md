@@ -4,6 +4,8 @@
 
 Aplicação fullstack que simula um fluxo completo de e-commerce — desde a navegação e filtragem de produtos até o checkout com controle de estoque e envio de e-mail de confirmação via fila. O backend expõe uma API REST com 33 endpoints e o frontend consome essa API por meio de uma SPA em Vue 3, com painel administrativo separado por papel de usuário.
 
+🔗 **Demo em produção**: [ecommerce-projeto.duckdns.org](https://ecommerce-projeto.duckdns.org)
+
 ## Funcionalidades
 
 - Cadastro e autenticação de usuários via JWT (Laravel Sanctum)
@@ -173,3 +175,11 @@ O backend segue a separação em camadas Controller → Service → Repository �
 - Expandir cobertura de testes no frontend para as páginas principais
 - Adicionar suporte a múltiplas imagens por produto
 - Criar endpoint de relatório de vendas por período para o painel admin
+
+## Autor
+ 
+**João Pereira**
+ 
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-devjoaopereira-0A66C2?logo=linkedin&logoColor=white)](https://www.linkedin.com/in/devjoaopereira/)
+[![GitHub](https://img.shields.io/badge/GitHub-DevJoaoVitorBP-181717?logo=github&logoColor=white)](https://github.com/DevJoaoVitorBP)
+[![E-mail](https://img.shields.io/badge/E--mail-developerjoaopereira%40gmail.com-D14836?logo=gmail&logoColor=white)](mailto:developerjoaopereira@gmail.com)
