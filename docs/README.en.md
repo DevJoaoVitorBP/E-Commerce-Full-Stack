@@ -1,3 +1,5 @@
+🌐 English | [Português (BR)](../README.md)
+
 # E-Commerce Fullstack
 
 ## About the project
