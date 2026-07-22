@@ -96,6 +96,11 @@ const form = reactive({
 });
 
 const handleRegister = async () => {
+  if (form.password !== form.password_confirmation) {
+    authStore.error = 'As senhas não coincidem.';
+    return;
+  }
+
   try {
     await authStore.register(form);
     router.push('/');
