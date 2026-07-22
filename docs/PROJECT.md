@@ -1,3 +1,5 @@
+🌐 [English](PROJECT.en.md) | Português (BR)
+
 # Projeto E-Commerce — Documentação Técnica
 
 Sistema de e-commerce fullstack desenvolvido com **Laravel 11** (PHP 8.2) no backend e **Vue 3 + TypeScript** no frontend, seguindo princípios SOLID e padrões de design (Repository, Service Layer, DTO).
