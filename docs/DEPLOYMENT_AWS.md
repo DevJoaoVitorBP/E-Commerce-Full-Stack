@@ -1,3 +1,5 @@
+🌐 [English](DEPLOYMENT_AWS.en.md) | Português (BR)
+
 # 🚀 Deployment na AWS - Guia Operacional
 
 **Guia passo a passo para deployar o projeto na AWS Free Tier**
