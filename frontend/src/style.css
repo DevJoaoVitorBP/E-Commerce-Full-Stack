@@ -59,6 +59,9 @@ h2 {
   font-family: var(--heading);
   font-weight: 500;
   color: var(--text-h);
+  @media (prefers-color-scheme: dark) {
+    color: #08060d;
+  }
 }
 
 h1 {

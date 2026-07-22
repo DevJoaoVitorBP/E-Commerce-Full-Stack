@@ -111,7 +111,7 @@
             </router-link>
           </div>
 
-          <h1 class="text-2xl md:text-4xl font-extrabold text-gray-900 mb-4 leading-tight">
+          <h1 class="text-2xl md:text-4xl font-extrabold mb-4 leading-tight">
             {{ product.name }}
           </h1>
 

@@ -1,23 +1,26 @@
 <template>
-  <header class="bg-white shadow">
+  <header class="bg-white dark:bg-gray-900 shadow dark:shadow-gray-800">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2">
         <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
           <span class="text-white font-bold">EC</span>
         </div>
-        <span class="font-bold text-lg">E-Commerce</span>
+        <span class="font-bold text-lg dark:text-white">E-Commerce</span>
       </router-link>
 
       <!-- Menu central (desktop) -->
       <div class="hidden md:flex items-center gap-8">
-        <router-link to="/products" class="text-gray-700 hover:text-blue-600 transition">
+        <router-link
+          to="/products"
+          class="text-gray-700 hover:text-blue-600 transition dark:text-white"
+        >
           Produtos
         </router-link>
         <router-link
           v-if="authStore.isAdmin"
           to="/admin"
-          class="text-gray-700 hover:text-blue-600 transition"
+          class="text-gray-700 hover:text-blue-600 transition dark:text-white"
         >
           Admin
         </router-link>
@@ -66,7 +69,10 @@
 
         <!-- Links de autenticação -->
         <div v-else class="flex items-center gap-4">
-          <router-link to="/login" class="text-gray-700 hover:text-blue-600 transition font-medium">
+          <router-link
+            to="/login"
+            class="text-gray-700 hover:text-blue-600 transition font-medium dark:text-white"
+          >
             Login
           </router-link>
           <router-link
@@ -100,7 +106,7 @@
 
         <button
           @click="mobileMenuOpen = !mobileMenuOpen"
-          class="p-2 text-gray-700 hover:text-blue-600 transition"
+          class="p-2 text-white hover:text-blue-600 transition"
           aria-label="Abrir menu"
         >
           <svg
@@ -134,7 +140,7 @@
       <div class="px-4 py-4 space-y-3">
         <router-link
           to="/products"
-          class="block py-2 text-gray-700 hover:text-blue-600 transition font-medium"
+          class="block py-2 text-gray-700 hover:text-blue-600 transition font-medium dark:text-gray-700"
           @click="mobileMenuOpen = false"
         >
           Produtos

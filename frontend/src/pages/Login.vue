@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4">
+  <div class="min-h-screen bg-white flex items-center justify-center py-12 px-4">
     <div class="bg-white rounded-lg shadow-md w-full max-w-md p-8">
       <h1 class="text-3xl font-bold mb-2 text-center">Login</h1>
       <p class="text-center text-gray-600 mb-8">Acesse sua conta</p>

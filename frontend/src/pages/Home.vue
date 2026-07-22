@@ -53,7 +53,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid grid-cols-3 gap-4 text-center">
           <div>
-            <p class="text-2xl font-bold text-blue-400">{{ products.length }}+</p>
+            <p class="text-2xl font-bold text-blue-400">{{ pagination?.total ?? 0 }}+</p>
             <p class="text-gray-400 text-sm">Produtos</p>
           </div>
           <div>
@@ -76,7 +76,7 @@
             <p class="text-blue-600 font-semibold text-sm uppercase tracking-wide mb-2">
               Destaques
             </p>
-            <h2 class="text-3xl font-bold text-gray-900">Produtos em Destaque</h2>
+            <h2 class="text-3xl font-bold">Produtos em Destaque</h2>
           </div>
           <router-link
             to="/products"
@@ -230,7 +230,7 @@ import { computed } from 'vue';
 import { useProductsQuery } from '@/composables/useProductsQuery';
 import { useAuthStore } from '@/stores/authStore';
 
-const { products: allProducts, isLoading } = useProductsQuery({ per_page: 8 });
+const { products: allProducts, isLoading, pagination } = useProductsQuery({ per_page: 8 });
 const authStore = useAuthStore();
 
 const products = computed(() => allProducts.value.slice(0, 8));
