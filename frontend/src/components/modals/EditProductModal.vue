@@ -36,6 +36,7 @@ const formData = reactive({
   quantity: 0,
   description: '',
   category_id: 0,
+  min_quantity: 0,
   active: true,
 });
 
@@ -70,6 +71,7 @@ const validateForm = (): boolean => {
     name: formData.name,
     price: formData.price,
     quantity: formData.quantity,
+    min_quantity: formData.min_quantity,
     active: formData.active,
   });
 
@@ -92,6 +94,7 @@ const handleSave = async () => {
     formDataToSend.append('quantity', formData.quantity.toString());
     formDataToSend.append('description', formData.description);
     formDataToSend.append('category_id', formData.category_id.toString());
+    formDataToSend.append('min_quantity', formData.min_quantity.toString());
     formDataToSend.append('active', formData.active.toString());
     formDataToSend.append('_method', 'PUT');
 
@@ -191,6 +194,21 @@ const closeModal = () => {
           placeholder="0"
         />
         <p v-if="errors.quantity" class="text-sm text-red-600 mt-1">{{ errors.quantity }}</p>
+      </div>
+
+      <!-- Minimal Quantity -->
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Quantidade Mínima</label>
+        <input
+          v-model.number="formData.min_quantity"
+          type="number"
+          min="0"
+          class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          placeholder="0"
+        />
+        <p v-if="errors.min_quantity" class="text-sm text-red-600 mt-1">
+          {{ errors.min_quantity }}
+        </p>
       </div>
 
       <!-- Description -->
