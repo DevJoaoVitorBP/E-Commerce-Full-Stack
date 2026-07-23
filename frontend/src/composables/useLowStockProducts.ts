@@ -17,6 +17,8 @@ export interface LowStockResponse {
   total: number;
   per_page: number;
   last_page: number;
+  total_critical: number;
+  total_low: number;
 }
 
 export function useLowStockProducts(page: Ref<number> = ref(1), perPage: Ref<number> = ref(10)) {
@@ -49,8 +51,8 @@ export function useLowStockProducts(page: Ref<number> = ref(1), perPage: Ref<num
   );
 
   const stockPercentage = (product: Product): number => {
-    if (product.min_quantity === 0) return 0;
-    return Math.round((product.quantity / product.min_quantity) * 100);
+    if (product.min_quantity === 0) return 100;
+    return Math.min(Math.round((product.quantity / product.min_quantity) * 100), 100);
   };
 
   const isStockCritical = (product: Product): boolean => product.quantity <= 0;
@@ -58,8 +60,8 @@ export function useLowStockProducts(page: Ref<number> = ref(1), perPage: Ref<num
   const isStockLow = (product: Product): boolean =>
     product.quantity > 0 && product.quantity <= product.min_quantity;
 
-  const countCritical = computed(() => products.value.filter(isStockCritical).length);
-  const countLow = computed(() => products.value.filter(isStockLow).length);
+  const countCritical = computed(() => data.value?.total_critical ?? 0);
+  const countLow = computed(() => data.value?.total_low ?? 0);
 
   return {
     products,

@@ -108,4 +108,14 @@ class ProductRepository extends BaseRepository
 
         return $query->paginate($filters['per_page'] ?? 15);
     }
+
+    public function countCriticalStock(): int
+    {
+        return $this->model->lowStock()->where('quantity', '<=', 0)->count();
+    }
+
+    public function countLowStock(): int
+    {
+        return $this->model->lowStock()->where('quantity', '>', 0)->count();
+    }
 }

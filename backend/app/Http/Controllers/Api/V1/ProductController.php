@@ -51,11 +51,17 @@ class ProductController extends Controller
         $filters = request()->only('per_page', 'page');
         $filters['per_page'] = $filters['per_page'] ?? 10;
         $products = $this->service->getLowStockProducts($filters);
+        $counts = $this->service->getLowStockCounts();
 
-        return $this->paginatedResponse(
+        $response = $this->paginatedResponse(
             ProductResource::collection($products),
             'Produtos com estoque baixo listados com sucesso'
-        );
+        )->getData(true);
+
+        $response['total_critical'] = $counts['total_critical'];
+        $response['total_low'] = $counts['total_low'];
+
+        return response()->json($response, 200);
     }
 
     public function store(StoreProductRequest $request): JsonResponse

@@ -68,9 +68,11 @@
           <tr class="border-b border-gray-200">
             <th class="text-left py-3 px-4 font-semibold text-gray-700">Produto</th>
             <th class="text-left py-3 px-4 font-semibold text-gray-700">Status</th>
-            <th class="text-center py-3 px-4 font-semibold text-gray-700">Atual</th>
+            <th class="text-center py-3 px-4 font-semibold text-gray-700">Quantidade Atual</th>
+            <!-- Vamos descartar por enquanto essas colunas, pois não são necessárias para o alerta de estoque baixo
             <th class="text-center py-3 px-4 font-semibold text-gray-700">Mínimo</th>
             <th class="text-center py-3 px-4 font-semibold text-gray-700">%</th>
+                        -->
             <th class="text-right py-3 px-4 font-semibold text-gray-700">Preço</th>
           </tr>
         </thead>
@@ -105,6 +107,7 @@
             <td class="py-3 px-4 text-center">
               <span class="font-semibold text-gray-900">{{ product.quantity }}</span>
             </td>
+            <!--
             <td class="py-3 px-4 text-center">
               <span class="text-gray-600">{{ product.min_quantity }}</span>
             </td>
@@ -114,20 +117,21 @@
                   <div
                     :class="[
                       'h-2 rounded-full transition-all',
-                      stockPercentage(product) <= 0
+                      clampedStockPercentage(product) <= 0
                         ? 'bg-red-600'
-                        : stockPercentage(product) <= 50
+                        : clampedStockPercentage(product) <= 50
                           ? 'bg-yellow-500'
                           : 'bg-green-500',
                     ]"
-                    :style="{ width: `${Math.min(stockPercentage(product), 100)}%` }"
+                    :style="{ width: `${clampedStockPercentage(product)}%` }"
                   ></div>
                 </div>
                 <span class="text-xs font-medium text-gray-600 min-w-8"
-                  >{{ Math.max(0, stockPercentage(product)) }}%</span
+                  >{{ clampedStockPercentage(product) }}%</span
                 >
               </div>
             </td>
+            -->
             <td class="py-3 px-4 text-right">
               <span class="font-medium text-gray-900">R$ {{ formatPrice(product.price) }}</span>
             </td>
@@ -221,17 +225,24 @@ defineEmits<{
   previousPage: [];
   nextPage: [];
 }>();
-
+/*
 const stockPercentage = (product: Product): number => {
   if (product.min_quantity === 0) return 0;
   return Math.round((product.quantity / product.min_quantity) * 100);
 };
 
+ const clampedStockPercentage = (product: Product): number => {
+   return Math.min(Math.max(stockPercentage(product), 0), 100);
+};
+*/
 const isStockCritical = (product: Product): boolean => {
   return product.quantity <= 0;
 };
 
-const formatPrice = (price: number) => {
-  return price.toFixed(2).replace('.', ',');
+const formatPrice = (price: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  }).format(price);
 };
 </script>

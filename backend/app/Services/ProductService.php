@@ -114,6 +114,14 @@ class ProductService
         return $this->repository->getLowStock($filters);
     }
 
+    public function getLowStockCounts(): array
+    {
+        return [
+            'total_critical' => $this->repository->countCriticalStock(),
+            'total_low' => $this->repository->countLowStock(),
+        ];
+    }
+
     public function searchProducts(string $query)
     {
         return $this->repository->searchByName($query);

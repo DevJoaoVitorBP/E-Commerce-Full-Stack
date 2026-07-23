@@ -183,8 +183,8 @@ const {
   products: lowStockProductsData,
   isLoading: lowStockLoading,
   pagination: lowStockPagination,
-  isStockCritical,
-  isStockLow,
+  countCritical,
+  countLow,
 } = useLowStockProducts(currentLowStockPage, lowStockPerPage);
 
 const isLoading = computed(
@@ -199,10 +199,6 @@ const stats = computed(() => ({
 }));
 
 const lowStockProducts = computed(() => lowStockProductsData.value);
-
-const countCritical = computed(() => lowStockProductsData.value.filter(isStockCritical).length);
-
-const countLow = computed(() => lowStockProductsData.value.filter(isStockLow).length);
 
 const formatPrice = (price: number) => price.toFixed(2).replace('.', ',');
 
