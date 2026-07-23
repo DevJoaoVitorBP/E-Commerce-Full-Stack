@@ -18,6 +18,12 @@
           Produtos
         </router-link>
         <router-link
+          to="/orders"
+          class="text-gray-700 hover:text-blue-600 transition dark:text-white"
+        >
+          Meus Pedidos
+        </router-link>
+        <router-link
           v-if="authStore.isAdmin"
           to="/admin"
           class="text-gray-700 hover:text-blue-600 transition dark:text-white"
@@ -156,6 +162,13 @@
           @click="mobileMenuOpen = false"
         >
           Produtos
+        </router-link>
+        <router-link
+          to="/orders"
+          class="block py-2 text-gray-700 hover:text-blue-600 transition font-medium dark:text-gray-700"
+          @click="mobileMenuOpen = false"
+        >
+          Meus Pedidos
         </router-link>
         <router-link
           v-if="authStore.isAdmin"
