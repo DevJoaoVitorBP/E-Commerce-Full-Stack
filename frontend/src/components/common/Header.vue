@@ -31,7 +31,7 @@
         <!-- Cart -->
         <router-link v-if="authStore.isAuthenticated" to="/cart" class="relative">
           <svg
-            class="w-6 h-6 text-gray-700 hover:text-blue-600 transition"
+            class="w-6 h-6 text-gray-700 hover:text-blue-600 transition dark:text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -55,7 +55,7 @@
         <div v-if="authStore.isAuthenticated" class="flex items-center gap-4">
           <router-link
             to="/profile"
-            class="text-sm text-gray-700 hover:text-blue-600 transition font-medium"
+            class="text-sm text-gray-700 hover:text-blue-600 transition font-medium dark:text-white"
           >
             {{ authStore.user?.name }}
           </router-link>
@@ -88,7 +88,7 @@
       <div class="flex md:hidden items-center gap-4">
         <!-- Cart (mobile) -->
         <router-link v-if="authStore.isAuthenticated" to="/cart" class="relative">
-          <svg class="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg class="w-6 h-6 text-gray-700 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -138,6 +138,13 @@
     <!-- Menu mobile expandido -->
     <div v-if="mobileMenuOpen" class="md:hidden border-t border-gray-100 bg-white shadow-md">
       <div class="px-4 py-4 space-y-3">
+        <router-link
+          to="/profile"
+          class="block py-2 text-gray-700 hover:text-blue-600 transition font-medium dark:text-gray-700"
+          @click="mobileMenuOpen = false"
+        >
+          Meu perfil
+        </router-link>
         <router-link
           to="/products"
           class="block py-2 text-gray-700 hover:text-blue-600 transition font-medium dark:text-gray-700"
