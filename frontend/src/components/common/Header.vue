@@ -3,9 +3,7 @@
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2">
-        <div class="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-          <span class="text-white font-bold">EC</span>
-        </div>
+        <img src="/ecommerce.svg" alt="E-Commerce" class="w-8 h-8 object-contain" />
         <span class="font-bold text-lg dark:text-white">E-Commerce</span>
       </router-link>
 
