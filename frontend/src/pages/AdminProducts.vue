@@ -71,16 +71,16 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
               <tr v-for="product in products" :key="product.id" class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <p class="font-semibold text-gray-900">{{ product.name }}</p>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <p class="text-gray-600">{{ product.category?.name || '-' }}</p>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <p class="font-semibold text-blue-600">R$ {{ formatPrice(product.price) }}</p>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <span
                     :class="{
                       'bg-green-100 text-green-800': product.quantity > 10,
@@ -93,7 +93,7 @@
                     {{ product.quantity }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <span
                     :class="
                       product.active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
@@ -103,7 +103,7 @@
                     {{ product.active ? 'Ativo' : 'Inativo' }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <div class="flex gap-2">
                     <button
                       @click="openEditModal(product)"
