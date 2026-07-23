@@ -88,7 +88,12 @@
       <div class="flex md:hidden items-center gap-4">
         <!-- Cart (mobile) -->
         <router-link v-if="authStore.isAuthenticated" to="/cart" class="relative">
-          <svg class="w-6 h-6 text-gray-700 dark:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg
+            class="w-6 h-6 text-gray-700 dark:text-white"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
