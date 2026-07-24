@@ -14,8 +14,10 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+    
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prepend(ConvertMethodInFormData::class);
+        $middleware->trustProxies(at: ['127.0.0.1']);
 
         $middleware->alias([
             'admin' => AdminMiddleware::class,
@@ -24,5 +26,5 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
-        //
+        // 
     })->create();
